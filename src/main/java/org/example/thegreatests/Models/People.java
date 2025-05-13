@@ -1,6 +1,5 @@
 package org.example.thegreatests.Models;
 
-public class People {
+public abstract class People {
     protected int id;
-
 }

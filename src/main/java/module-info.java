@@ -1,6 +1,8 @@
 module org.example.thegreatests {
     requires javafx.controls;
     requires javafx.fxml;
+    requires ormlite.jdbc;
+    requires java.sql;
 
     opens org.example.thegreatests to javafx.fxml;
     opens org.example.thegreatests.Views to javafx.fxml;
