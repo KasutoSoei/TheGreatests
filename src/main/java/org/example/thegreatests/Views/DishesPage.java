@@ -10,7 +10,7 @@ import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import org.example.thegreatests.Models.BaseDao;
 import org.example.thegreatests.Models.Dishes;
-
+import javafx.geometry.Insets;
 import java.io.IOException;
 import java.sql.SQLException;
 
@@ -23,10 +23,7 @@ public class DishesPage extends Application {
 
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/thegreatests/DishesPage-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1080, 720);
-        stage.setTitle(
-                "Dishes Page"
-        );
-
+        stage.setTitle("Dishes Page");
         stage.setScene(scene);
         stage.show();
 
