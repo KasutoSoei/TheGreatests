@@ -1,4 +1,4 @@
-package org.example.thegreatests;
+package org.example.thegreatests.Controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
