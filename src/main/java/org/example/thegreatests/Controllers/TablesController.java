@@ -12,9 +12,12 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.example.thegreatests.Models.BaseDao;
+import org.example.thegreatests.Models.People;
 import org.example.thegreatests.Models.Table;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +30,12 @@ public class TablesController {
 
     @FXML
     private Pane paneTable2;
+
+    @FXML
+    private Pane paneClientTable;
+
+    @FXML
+    private VBox vBoxClientTable;
 
 
     @FXML
@@ -43,6 +52,9 @@ public class TablesController {
 
     @FXML
     private TextField textFieldTableLocationAdd;
+
+    @FXML
+    private TextField textFieldNbrClientsAdding;
 
     private Integer currentTableId;
 
@@ -88,13 +100,13 @@ public class TablesController {
                         t -> {
                             VBox tablePane = new VBox();
                             Label label = new Label("Table "+ t.getLocation() +" - id"+ t.getId() + " (" + t.getStatus() + ")\nCapacité " + t.getSize());
-                            Button button = new Button("Modifier");
-                            button.setOnAction(event -> {
+                            Button buttonUpdate = new Button("Modifier");
+                            buttonUpdate.setOnAction(event -> {
                                 System.out.println("J'ai cliqué sur la table " + t.getId());
                                 currentTableId = t.getId();
                                 openTablePanel(t);
                             });
-                            tablePane.getChildren().addAll(label, button);
+                            tablePane.getChildren().addAll(label, buttonUpdate);
                             gridPane.add(tablePane, foundTable.indexOf(t)%5, foundTable.indexOf(t)/5);
                         }
                 );
@@ -105,6 +117,25 @@ public class TablesController {
         paneTable.setVisible(true);
         textFieldTableSize.setText(t.getSize()+"");
         textFieldTableLocation.setText(t.getLocation());
+        if (vBoxClientTable != null) {
+            vBoxClientTable.getChildren().clear();
+        }
+        System.out.println("Liste de Peoples "+t.getPeopleList());
+        // Récupérer tous les clients de la table et les ajouter à la vBox
+        try {
+            BaseDao<Table, Integer> tableDao = initTableDao();
+            Table table = tableDao.findById(currentTableId);
+            List<People> peopleList = table.getPeopleList();
+            if (peopleList != null) {
+                peopleList.stream().forEach(p -> {
+                    Label label = new Label("Client "+p.getId());
+                    vBoxClientTable.getChildren().add(label);
+                });
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
 
@@ -120,6 +151,7 @@ public class TablesController {
     private void closeTablePanel() {
         paneTable.setVisible(false);
         paneTable2.setVisible(false);
+        paneClientTable.setVisible(false);
     }
 
     @FXML
@@ -177,5 +209,51 @@ public class TablesController {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @FXML
+    private void clearTable() {
+        System.out.println("J'ai cliqué sur le bouton vider la table");
+        try {
+            BaseDao<Table, Integer> tableDao = initTableDao();
+            Table table = tableDao.findById(currentTableId);
+            table.setPeopleList(null);
+            table.setStatus("Libre");
+            tableDao.update(table);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        closeTablePanel();
+        reloadtable();
+    }
+
+    @FXML
+    private void openClientTable()
+    {
+        paneClientTable.setVisible(true);
+    }
+
+    @FXML
+    private void addClientsToTable() {
+        try {
+            BaseDao<Table, Integer> tableDao = initTableDao();
+            Table table = tableDao.findById(currentTableId);
+            List<People> peopleList = table.getPeopleList();
+            if (peopleList != null) {
+                peopleList = new ArrayList<>(peopleList);
+            }
+            int n = Integer.parseInt(textFieldNbrClientsAdding.getText());
+            // Je vais le modifier plus tard oui j'ai compris
+            for (int i = 0; i < n; i++) {
+                peopleList.add(new People(0));
+            }
+            table.setPeopleList(peopleList);
+            table.setStatus("Occupée");
+            tableDao.update(table);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        closeTablePanel();
+        reloadtable();
     }
 }
