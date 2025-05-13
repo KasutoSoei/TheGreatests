@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.thegreatests.Controllers.TablesController">
+   <children>
+      <Label fx:id="tableView" text="Tables" />
+      <GridPane fx:id="gridPane" gridLinesVisible="true" layoutX="37.0" layoutY="48.0" prefHeight="669.0" prefWidth="1207.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="64" minHeight="32.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="64" minHeight="32.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="64" minHeight="32.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+      </GridPane>
+       <Pane fx:id="paneTable" layoutX="256.0" layoutY="16.0" prefHeight="615.0" prefWidth="717.0" style="-fx-background-color: lightblue;" visible="false">
+         <children>
+            <Label fx:id="paneTableName" alignment="CENTER" contentDisplay="CENTER" layoutY="6.0" prefHeight="94.0" prefWidth="717.0" text="Table X" textAlignment="CENTER">
+               <font>
+                  <Font size="65.0" />
+               </font>
+            </Label>
+            <Label layoutX="57.0" layoutY="122.0" text="Nombre de clients dans la table" />
+            <TextField fx:id="textFieldTableSize" layoutX="57.0" layoutY="139.0" prefHeight="25.0" prefWidth="307.0" promptText="4" />
+            <Label layoutX="57.0" layoutY="166.0" text="Emplacement de la table" />
+            <TextField fx:id="textFieldTableLocation" layoutX="57.0" layoutY="183.0" prefHeight="25.0" prefWidth="307.0" promptText="La 14" />
+            <Button layoutX="392.0" layoutY="139.0" mnemonicParsing="false" onAction="#saveTable" prefHeight="69.0" prefWidth="85.0" text="Mettre à jour" />
+            <Button layoutX="679.0" layoutY="14.0" mnemonicParsing="false" onAction="#closeTablePanel" text="X" />
+            <Button fx:id="buttonDeteleTable" layoutX="14.0" layoutY="569.0" mnemonicParsing="false" onAction="#deleteTable" prefHeight="32.0" prefWidth="168.0" text="Supprimer la table" textFill="RED" />
+         </children>
+      </Pane>
+       <Pane fx:id="paneTable2" layoutX="256.0" layoutY="16.0" prefHeight="615.0" prefWidth="717.0" style="-fx-background-color: lightblue;" visible="false">
+           <children>
+               <Label fx:id="paneTableName2" alignment="CENTER" contentDisplay="CENTER" layoutY="6.0" prefHeight="94.0" prefWidth="717.0" text="Table X" textAlignment="CENTER">
+                   <font>
+                       <Font size="65.0" />
+                   </font>
+               </Label>
+               <Label layoutX="57.0" layoutY="122.0" text="Nombre de clients dans la table" />
+               <TextField fx:id="textFieldTableSizeAdd" layoutX="57.0" layoutY="139.0" prefHeight="25.0" prefWidth="307.0" promptText="4" />
+               <Label layoutX="57.0" layoutY="166.0" text="Emplacement de la table" />
+               <TextField fx:id="textFieldTableLocationAdd" layoutX="57.0" layoutY="183.0" prefHeight="25.0" prefWidth="307.0" promptText="La 14" />
+               <Button layoutX="392.0" layoutY="139.0" mnemonicParsing="false" onAction="#createTable" prefHeight="69.0" prefWidth="85.0" text="Créé" />
+               <Button layoutX="679.0" layoutY="14.0" mnemonicParsing="false" onAction="#closeTablePanel" text="X" />
+           </children>
+       </Pane>
+      <Button layoutX="1176.0" layoutY="17.0" mnemonicParsing="false" onAction="#openCreateTablePanel" text="Add table" />
+   </children>
+</Pane>

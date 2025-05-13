@@ -38,4 +38,11 @@ public class BaseDao<T, ID> {
     public void delete(T entity) throws SQLException {
         dao.delete(entity);
     }
+
+    public void deleteById(ID id) throws SQLException {
+        T entity = findById(id);
+        if (entity != null) {
+            delete(entity);
+        }
+    }
 }
