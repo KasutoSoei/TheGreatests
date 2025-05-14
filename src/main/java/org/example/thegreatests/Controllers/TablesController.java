@@ -35,7 +35,7 @@ public class TablesController {
     private Pane paneClientTable;
 
     @FXML
-    private VBox vBoxClientTable;
+    private Label labelClientNumber;
 
 
     @FXML
@@ -55,6 +55,9 @@ public class TablesController {
 
     @FXML
     private TextField textFieldNbrClientsAdding;
+
+    @FXML
+    private Button buttonCreateCommand;
 
     private Integer currentTableId;
 
@@ -81,7 +84,7 @@ public class TablesController {
             BaseDao<Table, Integer> tableDao = initTableDao();
             List<Table> foundtable = tableDao.findAll();
 
-            foundtable = foundtable.stream().filter(t -> t.getStatus().equals("Libre")).collect(Collectors.toList());
+            // foundtable = foundtable.stream().filter(t -> t.getStatus().equals("Libre")).collect(Collectors.toList());
             return foundtable;
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -100,6 +103,9 @@ public class TablesController {
                         t -> {
                             VBox tablePane = new VBox();
                             Label label = new Label("Table "+ t.getLocation() +" - id"+ t.getId() + " (" + t.getStatus() + ")\nCapacité " + t.getSize());
+                            if (t.getPeopleLenght() > 0) {
+                                tablePane.setStyle("-fx-background-color: lightgray");
+                            }
                             Button buttonUpdate = new Button("Modifier");
                             buttonUpdate.setOnAction(event -> {
                                 System.out.println("J'ai cliqué sur la table " + t.getId());
@@ -107,6 +113,7 @@ public class TablesController {
                                 openTablePanel(t);
                             });
                             tablePane.getChildren().addAll(label, buttonUpdate);
+                            tablePane.alignmentProperty().setValue(javafx.geometry.Pos.CENTER);
                             gridPane.add(tablePane, foundTable.indexOf(t)%5, foundTable.indexOf(t)/5);
                         }
                 );
@@ -117,20 +124,18 @@ public class TablesController {
         paneTable.setVisible(true);
         textFieldTableSize.setText(t.getSize()+"");
         textFieldTableLocation.setText(t.getLocation());
-        if (vBoxClientTable != null) {
-            vBoxClientTable.getChildren().clear();
-        }
-        System.out.println("Liste de Peoples "+t.getPeopleList());
+        System.out.println("Liste de Peoples "+t.getPeopleLenght());
         // Récupérer tous les clients de la table et les ajouter à la vBox
         try {
             BaseDao<Table, Integer> tableDao = initTableDao();
             Table table = tableDao.findById(currentTableId);
-            List<People> peopleList = table.getPeopleList();
-            if (peopleList != null) {
-                peopleList.stream().forEach(p -> {
-                    Label label = new Label("Client "+p.getId());
-                    vBoxClientTable.getChildren().add(label);
-                });
+            Integer peopleList = table.getPeopleLenght();
+            if (peopleList > 0) {
+                buttonCreateCommand.setDisable(false);
+                labelClientNumber.setText("Nombre de clients : " + peopleList);
+            } else {
+                buttonCreateCommand.setDisable(true);
+                labelClientNumber.setText("Aucun client");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -174,7 +179,7 @@ public class TablesController {
 
             BaseDao<Table, Integer> tableDao = initTableDao();
 
-            Table table = new Table("Libre", Integer.parseInt(textFieldTableSizeAdd.getText()), textFieldTableLocationAdd.getText());
+            Table table = new Table(Integer.parseInt(textFieldTableSizeAdd.getText()), textFieldTableLocationAdd.getText());
             tableDao.create(table);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -217,8 +222,7 @@ public class TablesController {
         try {
             BaseDao<Table, Integer> tableDao = initTableDao();
             Table table = tableDao.findById(currentTableId);
-            table.setPeopleList(null);
-            table.setStatus("Libre");
+            table.setPeopleLenght(0);
             tableDao.update(table);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -238,22 +242,20 @@ public class TablesController {
         try {
             BaseDao<Table, Integer> tableDao = initTableDao();
             Table table = tableDao.findById(currentTableId);
-            List<People> peopleList = table.getPeopleList();
-            if (peopleList != null) {
-                peopleList = new ArrayList<>(peopleList);
-            }
-            int n = Integer.parseInt(textFieldNbrClientsAdding.getText());
-            // Je vais le modifier plus tard oui j'ai compris
-            for (int i = 0; i < n; i++) {
-                peopleList.add(new People(0));
-            }
-            table.setPeopleList(peopleList);
-            table.setStatus("Occupée");
+            Integer peopleList = table.getPeopleLenght();
+            System.out.println("Liste de Peoples "+peopleList);
+            peopleList += Integer.parseInt(textFieldNbrClientsAdding.getText());
+            table.setPeopleLenght(peopleList);
             tableDao.update(table);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
         closeTablePanel();
         reloadtable();
+    }
+
+    @FXML
+    private void onCreateCommand() {
+
     }
 }

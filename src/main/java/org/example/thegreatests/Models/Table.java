@@ -19,27 +19,33 @@ public class Table {
     @DatabaseField
     private String location;
 
-    private List<People> peopleList;
+    @DatabaseField
+    private Integer peopleLenght;
 
     public Table() {}
 
-    public Table(String status, int size, String location) {
-        this.status = status;
+    public Table(int size, String location) {
+        this.status = "Libre";
         this.size = size;
         this.location = location;
-        // this.peopleList is already initialized to an empty list.
+        this.peopleLenght = 0;
     }
 
     public int getId() {
         return id;
     }
 
-    public List<People> getPeopleList() {
-        return peopleList;
+    public Integer getPeopleLenght() {
+        return peopleLenght;
     }
 
-    public void setPeopleList(List<People> peopleList) {
-        this.peopleList = peopleList;
+    public void setPeopleLenght(Integer peopleLenght) {
+        this.peopleLenght = peopleLenght;
+        if (peopleLenght > 0) {
+            this.status = "Occupé";
+        } else {
+            this.status = "Libre";
+        }
     }
 
     public String getStatus() {
