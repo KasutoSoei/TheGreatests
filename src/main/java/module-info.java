@@ -3,6 +3,7 @@ module org.example.thegreatests {
     requires javafx.fxml;
     requires ormlite.jdbc;
     requires java.sql;
+    requires java.desktop;
 
     opens org.example.thegreatests to javafx.fxml;
     opens org.example.thegreatests.Views to javafx.fxml;
