@@ -29,6 +29,7 @@ public class DishesController {
 
     @FXML
     private ListView<HBox> MyListView;
+    private TextField indexError;
 
     // Calls LoadDishes at page start
     public void initialize() {
@@ -115,8 +116,14 @@ public class DishesController {
         Label errorLabel = new Label();
         errorLabel.setStyle("-fx-text-fill: red;");
 
+        Label emptyErrorLabel = new Label();
+        errorLabel.setStyle("-fx-text-fill: red;");
+
         Button submitButton = new Button("Create");
         submitButton.setOnAction(e -> {
+
+            panel.getChildren().remove(errorLabel);
+
             String name = nameInput.getText();
             String desc = descInput.getText();
             String priceTxt = priceInput.getText();
@@ -126,25 +133,30 @@ public class DishesController {
             String url = "jdbc:sqlite:database.db";
             JdbcConnectionSource source = null;
 
+
+            if (name.isEmpty() || desc.isEmpty() || imageURL.isEmpty()) {
+                errorLabel.setText("All fields must be filled");
+                panel.getChildren().add(errorLabel);
+            }
             try {
-                float price = Float.parseFloat(priceTxt);
 
-                source = new JdbcConnectionSource(url);
-                TableUtils.createTableIfNotExists(source, Dishes.class);
-                BaseDao<Dishes, Integer> DishDao = new BaseDao<>(source, Dishes.class);
+                    float price = Float.parseFloat(priceTxt);
 
-                Dishes dish = new Dishes(name, desc, price, imageURL);
+                    source = new JdbcConnectionSource(url);
+                    TableUtils.createTableIfNotExists(source, Dishes.class);
+                    BaseDao<Dishes, Integer> DishDao = new BaseDao<>(source, Dishes.class);
 
-                DishDao.create(dish);
+                    Dishes dish = new Dishes(name, desc, price, imageURL);
 
-                popup.close();
-                MyListView.getItems().clear();
-                loadDishes();
+                    DishDao.create(dish);
 
+                    popup.close();
+                    MyListView.getItems().clear();
+                    loadDishes();
 
             } catch (NumberFormatException ex) {
-                errorLabel.setText("Please enter a valid price");
                 if (!panel.getChildren().contains(errorLabel)) {
+                    errorLabel.setText("Please enter a valid price");
                     panel.getChildren().add(panel.getChildren().indexOf(priceInput) + 1, errorLabel);
                 }
             }
