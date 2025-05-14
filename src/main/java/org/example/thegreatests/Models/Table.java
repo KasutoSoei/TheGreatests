@@ -27,7 +27,7 @@ public class Table {
         this.status = status;
         this.size = size;
         this.location = location;
-        this.peopleList = null;
+        // this.peopleList is already initialized to an empty list.
     }
 
     public int getId() {
