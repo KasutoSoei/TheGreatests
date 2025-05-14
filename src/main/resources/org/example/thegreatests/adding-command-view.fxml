@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.thegreatests.Controllers.AddingCommandController">
+    <children>
+        <Label fx:id="tableView" prefHeight="24.0" prefWidth="155.0" text="Création d'une commande" />
+      <GridPane fx:id="gridPane" gridLinesVisible="true" layoutX="14.0" layoutY="24.0" prefHeight="656.0" prefWidth="843.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="60" minHeight="32" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="60" minHeight="32" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="60" minHeight="32" vgrow="SOMETIMES" />
+        </rowConstraints>
+      </GridPane>
+      <ScrollPane fx:id="scrollPane" layoutX="866.0" layoutY="24.0" prefHeight="603.0" prefWidth="407.0">
+         <content>
+            <VBox fx:id="vBoxCommand" prefHeight="678.0" prefWidth="386.0" spacing="16.0" />
+         </content>
+      </ScrollPane>
+      <Button layoutX="863.0" layoutY="664.0" mnemonicParsing="false" onAction="#onValidatedCommand" prefHeight="25.0" prefWidth="407.0" text="Valider la commande" />
+    </children>
+</Pane>

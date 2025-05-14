@@ -39,9 +39,6 @@ public class InvoicesController {
     private VBox vBoxInvoices;
 
     @FXML
-    private ScrollPane scrollPane;
-
-    @FXML
     private Pane paneFactureCreation;
 
     @FXML

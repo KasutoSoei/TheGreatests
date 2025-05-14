@@ -6,12 +6,14 @@ import java.util.List;
 public class Commands {
     private int id;
     private List<Dishes> dishiesList;
-    private Table table;
+    private Integer idTable;
     private String status;
 
-    public Commands(List<Dishes> dishiesList, Table table, String status) {
+    public Commands() {}
+
+    public Commands(List<Dishes> dishiesList, Integer idTable, String status) {
         this.dishiesList = dishiesList;
-        this.table = table;
+        this.idTable = idTable;
         this.status = status;
     }
 
@@ -27,12 +29,12 @@ public class Commands {
         this.dishiesList = dishiesList;
     }
 
-    public Table getTable() {
-        return table;
+    public Integer getIdTable() {
+        return idTable;
     }
 
-    public void setTable(Table table) {
-        this.table = table;
+    public void setIdTable(Integer idTable) {
+        this.idTable = idTable;
     }
 
     public String getStatus() {
