@@ -128,23 +128,13 @@ public class TablesController {
         textFieldTableSize.setText(t.getSize()+"");
         textFieldTableLocation.setText(t.getLocation());
         System.out.println("Liste de Peoples "+t.getPeopleLenght());
-        // Récupérer tous les clients de la table et les ajouter à la vBox
-        try {
-            BaseDao<Table, Integer> tableDao = initTableDao();
-            Table table = tableDao.findById(currentTableId);
-            Integer peopleList = table.getPeopleLenght();
-            if (peopleList > 0) {
+            if (t.getPeopleLenght() > 0) {
                 buttonCreateCommand.setDisable(false);
-                labelClientNumber.setText("Nombre de clients : " + peopleList);
+                labelClientNumber.setText("Nombre de clients : " + t.getPeopleLenght());
             } else {
                 buttonCreateCommand.setDisable(true);
                 labelClientNumber.setText("Aucun client");
             }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-
     }
 
     @FXML
