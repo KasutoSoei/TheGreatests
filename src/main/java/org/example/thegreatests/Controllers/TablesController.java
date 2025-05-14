@@ -81,7 +81,7 @@ public class TablesController {
             BaseDao<Table, Integer> tableDao = initTableDao();
             List<Table> foundtable = tableDao.findAll();
 
-            foundtable.stream().filter(t -> t.getStatus().equals("Libre")).collect(Collectors.toList());
+            foundtable = foundtable.stream().filter(t -> t.getStatus().equals("Libre")).collect(Collectors.toList());
             return foundtable;
         } catch (SQLException e) {
             throw new RuntimeException(e);
