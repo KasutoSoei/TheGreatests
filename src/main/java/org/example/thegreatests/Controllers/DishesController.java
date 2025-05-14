@@ -4,6 +4,8 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -18,11 +20,11 @@ import org.example.thegreatests.Models.BaseDao;
 import org.example.thegreatests.Models.Dishes;
 import javafx.scene.control.Label;
 import javafx.geometry.Insets;
-
-
 import javafx.scene.image.Image;
 import java.sql.SQLException;
 import java.util.List;
+
+
 public class DishesController {
 
     @FXML
@@ -49,6 +51,7 @@ public class DishesController {
                 img.setFitWidth(80);
                 img.setFitHeight(60);
 
+`
                 Button deleteBtn = new Button("Supprimer");
                 deleteBtn.setOnAction(e -> {
                     try {
@@ -60,10 +63,23 @@ public class DishesController {
                     }
                 });
 
-                Label label = new Label(dish.getName() + " - " + dish.getPrice() + "€");
+                Label label = new Label(dish.getName());
                 label.setStyle("-fx-font-size: 25px;");
                 HBox hbox = new HBox(10, img, label, deleteBtn);
+              
+                String desc = dish.getDescription();
+                Float price = dish.getPrice();
+
+                Label label = new Label(dish.getName());
+                label.setStyle("-fx-font-size: 25px;");
+                VBox labelContainer = new VBox(label);
+                labelContainer.setAlignment(Pos.CENTER);
+                HBox hbox = new HBox(10, img, labelContainer);
                 hbox.setPadding(new Insets(5));
+
+                hbox.setOnMouseClicked(event -> {
+                    handleDishClicked(desc, price);
+                });
 
                 MyListView.getItems().add(hbox);
 
@@ -124,8 +140,6 @@ public class DishesController {
             }
         });
 
-
-
         panel.getChildren().addAll(nameInput, descInput, priceInput, imageInput, submitButton);
 
         Scene scene = new Scene(panel, 700, 600);
@@ -136,4 +150,35 @@ public class DishesController {
         popup.show();
     }
 
-}
+    private void handleDishClicked(String desc, Float price){
+        // show popup with dish details
+        HBox selectedDish = MyListView.getSelectionModel().getSelectedItem();
+
+        VBox detailsPanel = new VBox(10);
+        detailsPanel.setStyle("-fx-background-color: lightblue;");
+        detailsPanel.setPadding(new Insets(10));
+
+        Stage dishDetails = new Stage();
+        dishDetails.setTitle("Détails du plat");
+
+        Label dishDesc = new Label();
+        dishDesc.setText(desc);
+        dishDesc.setStyle("-fx-font-size: 20px;");
+
+        Label dishPrice = new Label();
+        dishPrice.setText(price + "€");
+        dishPrice.setStyle("-fx-font-size: 20px;");
+
+
+        detailsPanel.getChildren().addAll(dishDesc, dishPrice);
+
+        Scene scene = new Scene(detailsPanel, 400, 140);
+
+        dishDetails.setScene(scene);
+        dishDetails.show();
+
+        }
+
+
+
+    }
