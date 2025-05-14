@@ -1,31 +1,51 @@
 package org.example.thegreatests.Models;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.List;
 
+@DatabaseTable(tableName = "Table")
 public class Table {
+    @DatabaseField(generatedId = true)
     private int id;
-    private String status;
-    private int size;
-    private String location;
-    private List<People> peopleList;
 
-    public Table(String status, int size, String location, List<People> peopleList) {
-        this.status = status;
+    @DatabaseField
+    private String status;
+
+    @DatabaseField
+    private int size;
+
+    @DatabaseField
+    private String location;
+
+    @DatabaseField
+    private Integer peopleLenght;
+
+    public Table() {}
+
+    public Table(int size, String location) {
+        this.status = "Libre";
         this.size = size;
         this.location = location;
-        this.peopleList = peopleList;
+        this.peopleLenght = 0;
     }
 
     public int getId() {
         return id;
     }
 
-    public List<People> getPeopleList() {
-        return peopleList;
+    public Integer getPeopleLenght() {
+        return peopleLenght;
     }
 
-    public void setPeopleList(List<People> peopleList) {
-        this.peopleList = peopleList;
+    public void setPeopleLenght(Integer peopleLenght) {
+        this.peopleLenght = peopleLenght;
+        if (peopleLenght > 0) {
+            this.status = "Occupé";
+        } else {
+            this.status = "Libre";
+        }
     }
 
     public String getStatus() {
