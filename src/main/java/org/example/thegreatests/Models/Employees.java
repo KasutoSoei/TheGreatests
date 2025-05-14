@@ -19,11 +19,11 @@ public class Employees extends People {
         super(0);
     }
 
-    public Employees(String name, String job, int workedHours) {
+    public Employees(String name, String job) {
         super(0);
         this.name = name;
         this.job = job;
-        this.workedHours = workedHours;
+        this.workedHours = 0;
     }
 
     public int getId() {
