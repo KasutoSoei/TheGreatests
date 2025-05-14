@@ -25,6 +25,9 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class AddingCommandController {
 
@@ -44,6 +47,8 @@ public class AddingCommandController {
 
     @FXML
     private ComboBox <String> selectTable;
+
+    private String SelectValue;
 
 
     @FXML
@@ -157,7 +162,24 @@ public class AddingCommandController {
         BaseDao<Commands, Integer> tableDao = initCommandsDao();
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        Commands command = new Commands(dishiesList, 1,"En attente", formatter.format(now));
+
+        SelectValue = selectTable.getValue();
+        if (SelectValue == null || SelectValue.isEmpty()) {
+            errorLabel.setText("Veuillez choisir une table");
+            errorLabel.setStyle("-fx-text-fill: red;");
+            errorLabel.setVisible(true);
+            return;
+        }
+
+        String TableValueLocation = SelectValue.replace("Table n°", "");
+
+        List<Table> tablesInfo = getTablesInfos();
+        Optional<Table> selectedTable = tablesInfo.stream()
+                .filter(table -> Objects.equals(table.getLocation(), TableValueLocation))
+                .findFirst();
+        int idTable = selectedTable.get().getId();
+
+        Commands command = new Commands(dishiesList, idTable,"En attente", formatter.format(now));
 
         try {
             if (vBoxCommand.getChildren().isEmpty()){
