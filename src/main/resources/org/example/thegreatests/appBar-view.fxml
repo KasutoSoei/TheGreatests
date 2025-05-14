@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<HBox fx:controller="org.example.thegreatests.Controllers.AppBarController"
+      xmlns:fx="http://javafx.com/fxml"
+      style="-fx-background-color: #333; -fx-padding: 10;"
+      spacing="20"
+      alignment="CENTER_LEFT">
+
+    <Button fx:id="startButton" text="Start" onAction="#handleStart"/>
+    <Label fx:id="timerLabel" text="00:00" style="-fx-text-fill: white; -fx-font-size: 18px;" />
+
+</HBox>

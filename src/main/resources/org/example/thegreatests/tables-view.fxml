@@ -5,7 +5,7 @@
 <?import javafx.scene.text.*?>
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.thegreatests.Controllers.TablesController">
-   <children>
+    <children>
       <Label fx:id="tableView" text="Tables" />
       <GridPane fx:id="gridPane" gridLinesVisible="true" layoutX="37.0" layoutY="48.0" prefHeight="669.0" prefWidth="1207.0">
         <columnConstraints>
@@ -66,7 +66,7 @@
                <Button layoutX="679.0" layoutY="14.0" mnemonicParsing="false" onAction="#closeTablePanel" text="X" />
            </children>
        </Pane>
-      <Button layoutX="1146.0" layoutY="14.0" mnemonicParsing="false" onAction="#openCreateTablePanel" text="Créer une table" />
+        <Button layoutX="1146.0" layoutY="14.0" mnemonicParsing="false" onAction="#openCreateTablePanel" text="Créer une table" />
       <Pane fx:id="paneClientTable" layoutX="266.0" layoutY="26.0" prefHeight="615.0" prefWidth="717.0" style="-fx-background-color: brown;" visible="false">
          <children>
             <Label fx:id="paneTableName1" alignment="CENTER" contentDisplay="CENTER" layoutY="6.0" prefHeight="94.0" prefWidth="717.0" text="Nombre de clients sur la table" textAlignment="CENTER" textOverrun="CLIP" wrapText="true">
@@ -85,5 +85,8 @@
             <Button layoutX="679.0" layoutY="14.0" mnemonicParsing="false" onAction="#closeTablePanel" text="X" />
          </children>
       </Pane>
-   </children>
+        <Pane layoutX="1130.0" layoutY="660.0">
+            <fx:include fx:id="appBar" source="appBar-view.fxml"/>
+        </Pane>
+    </children>
 </Pane>
