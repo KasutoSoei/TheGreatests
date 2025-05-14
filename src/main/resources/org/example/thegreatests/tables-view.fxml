@@ -21,7 +21,7 @@
           <RowConstraints maxHeight="64" minHeight="32.0" vgrow="SOMETIMES" />
         </rowConstraints>
       </GridPane>
-       <Pane fx:id="paneTable" layoutX="256.0" layoutY="16.0" prefHeight="615.0" prefWidth="717.0" style="-fx-background-color: lightblue;">
+       <Pane fx:id="paneTable" layoutX="256.0" layoutY="16.0" prefHeight="615.0" prefWidth="717.0" style="-fx-background-color: lightblue;" visible="false">
          <children>
             <Label fx:id="paneTableName" alignment="CENTER" contentDisplay="CENTER" layoutY="6.0" prefHeight="94.0" prefWidth="717.0" text="Table X" textAlignment="CENTER">
                <font>
