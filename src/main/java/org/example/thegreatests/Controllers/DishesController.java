@@ -51,6 +51,22 @@ public class DishesController {
                 img.setFitWidth(80);
                 img.setFitHeight(60);
 
+`
+                Button deleteBtn = new Button("Supprimer");
+                deleteBtn.setOnAction(e -> {
+                    try {
+                        DishDao.deleteById(dish.getId());
+                        MyListView.getItems().clear();
+                        loadDishes();
+                    } catch (SQLException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                });
+
+                Label label = new Label(dish.getName());
+                label.setStyle("-fx-font-size: 25px;");
+                HBox hbox = new HBox(10, img, label, deleteBtn);
+              
                 String desc = dish.getDescription();
                 Float price = dish.getPrice();
 
