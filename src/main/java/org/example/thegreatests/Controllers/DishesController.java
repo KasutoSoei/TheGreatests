@@ -8,8 +8,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.example.thegreatests.Models.BaseDao;
 import org.example.thegreatests.Models.Dishes;
@@ -17,18 +20,20 @@ import javafx.scene.control.Label;
 import javafx.geometry.Insets;
 
 
-import java.awt.*;
+import javafx.scene.image.Image;
 import java.sql.SQLException;
 import java.util.List;
 public class DishesController {
 
     @FXML
-    private ListView<String> MyListView;
+    private ListView<HBox> MyListView;
 
+    // Calls LoadDishes at page start
     public void initialize() {
         loadDishes();
     }
 
+    // Method getting dishes in database and displaying them
     private void loadDishes() {
         try {
             String url = "jdbc:sqlite:database.db";
@@ -37,19 +42,28 @@ public class DishesController {
             TableUtils.createTableIfNotExists(source, Dishes.class);
             BaseDao<Dishes, Integer> DishDao = new BaseDao<>(source, Dishes.class);
 
-            Dishes dish1 = new Dishes("Pâtes à la carbonara", "Bah des pâtes carbo quoi", 12.5f, "https://www.panzani.fr/_ipx/f_webp&q_80&s_1800x1202/https://backend.panzani.fr/app/uploads/2023/10/visuel-spaghetti-carbonara-unsmushed.png");
-            //DishDao.create(dish1);
-
             List<Dishes> foundDishes = DishDao.findAll();
 
-            foundDishes.stream()
-                   .forEach(dish -> MyListView.getItems().addAll(dish.getName() + " - " + dish.getDescription() + " - " + dish.getPrice()+"€"));
+            foundDishes.stream().forEach(dish -> {
+                ImageView img = new ImageView(new Image(dish.getImage(), true));
+                img.setFitWidth(80);
+                img.setFitHeight(60);
+
+                Label label = new Label(dish.getName() + " - " + dish.getPrice() + "€");
+                label.setStyle("-fx-font-size: 25px;");
+                HBox hbox = new HBox(10, img, label);
+                hbox.setPadding(new Insets(5));
+
+                MyListView.getItems().add(hbox);
+            });
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
+
+    // Method opening a popup to create a new dish
     @FXML
     private void handleCreateDish (){
 
@@ -99,7 +113,7 @@ public class DishesController {
 
         panel.getChildren().addAll(nameInput, descInput, priceInput, imageInput, submitButton);
 
-        Scene scene = new Scene(panel, 300, 200);
+        Scene scene = new Scene(panel, 700, 600);
 
 
         popup.setTitle("Nouveau plat");
@@ -107,7 +121,4 @@ public class DishesController {
         popup.show();
     }
 
-    private void reloadDishes() {
-        //
-    }
 }
