@@ -51,7 +51,7 @@ public class DishesController {
                 img.setFitWidth(80);
                 img.setFitHeight(60);
 
-`
+
                 Button deleteBtn = new Button("Supprimer");
                 deleteBtn.setOnAction(e -> {
                     try {
@@ -65,16 +65,15 @@ public class DishesController {
 
                 Label label = new Label(dish.getName());
                 label.setStyle("-fx-font-size: 25px;");
-                HBox hbox = new HBox(10, img, label, deleteBtn);
-              
+
                 String desc = dish.getDescription();
                 Float price = dish.getPrice();
 
-                Label label = new Label(dish.getName());
-                label.setStyle("-fx-font-size: 25px;");
                 VBox labelContainer = new VBox(label);
                 labelContainer.setAlignment(Pos.CENTER);
-                HBox hbox = new HBox(10, img, labelContainer);
+                VBox deleteBtnContainer = new VBox(deleteBtn);
+                deleteBtnContainer.setAlignment(Pos.CENTER);
+                HBox hbox = new HBox(10, img, labelContainer, deleteBtnContainer);
                 hbox.setPadding(new Insets(5));
 
                 hbox.setOnMouseClicked(event -> {
@@ -113,21 +112,29 @@ public class DishesController {
         TextField imageInput = new TextField();
         imageInput.setPromptText("Image source");
 
+        Label errorLabel = new Label();
+        errorLabel.setStyle("-fx-text-fill: red;");
+
         Button submitButton = new Button("Create");
         submitButton.setOnAction(e -> {
             String name = nameInput.getText();
             String desc = descInput.getText();
-            float price = Float.parseFloat(priceInput.getText());
+            String priceTxt = priceInput.getText();
             String imageURL = imageInput.getText();
+
 
             String url = "jdbc:sqlite:database.db";
             JdbcConnectionSource source = null;
+
             try {
+                float price = Float.parseFloat(priceTxt);
+
                 source = new JdbcConnectionSource(url);
                 TableUtils.createTableIfNotExists(source, Dishes.class);
                 BaseDao<Dishes, Integer> DishDao = new BaseDao<>(source, Dishes.class);
 
                 Dishes dish = new Dishes(name, desc, price, imageURL);
+
                 DishDao.create(dish);
 
                 popup.close();
@@ -135,10 +142,18 @@ public class DishesController {
                 loadDishes();
 
 
-            } catch (SQLException ex) {
+            } catch (NumberFormatException ex) {
+                errorLabel.setText("Please enter a valid price");
+                if (!panel.getChildren().contains(errorLabel)) {
+                    panel.getChildren().add(panel.getChildren().indexOf(priceInput) + 1, errorLabel);
+                }
+            }
+            catch (SQLException ex) {
                 throw new RuntimeException(ex);
+
             }
         });
+
 
         panel.getChildren().addAll(nameInput, descInput, priceInput, imageInput, submitButton);
 
@@ -150,7 +165,7 @@ public class DishesController {
         popup.show();
     }
 
-    private void handleDishClicked(String desc, Float price){
+    private void handleDishClicked(String desc, float price){
         // show popup with dish details
         HBox selectedDish = MyListView.getSelectionModel().getSelectedItem();
 
