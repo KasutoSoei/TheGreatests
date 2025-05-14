@@ -138,6 +138,7 @@ public class DishesController {
                 errorLabel.setText("All fields must be filled");
                 panel.getChildren().add(errorLabel);
             }
+
             try {
 
                     float price = Float.parseFloat(priceTxt);

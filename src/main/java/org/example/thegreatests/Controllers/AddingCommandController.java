@@ -2,8 +2,12 @@ package org.example.thegreatests.Controllers;
 
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import javafx.beans.Observable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -18,6 +22,8 @@ import org.example.thegreatests.Models.Table;
 import org.example.thegreatests.Views.CommandsView;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class AddingCommandController {
@@ -34,9 +40,25 @@ public class AddingCommandController {
     private ScrollPane scrollPane;
 
     @FXML
+    private Label errorLabel;
+
+    @FXML
+    private ComboBox <String> selectTable;
+
+
+    @FXML
     public void initialize() {
         System.out.println("Controller Adding Command");
         showDishesGrid();
+        errorLabel.setVisible(false);
+        List<Table> tablesInfo = getTablesInfos();
+        List<String> tablesLocations = tablesInfo.stream()
+                .map(table -> "Table n°" + table.getLocation())
+                .toList();
+
+        ObservableList<String> list = FXCollections.observableArrayList(tablesLocations);
+        selectTable.setItems(list);
+
 
 
     }
@@ -48,6 +70,18 @@ public class AddingCommandController {
             TableUtils.createTableIfNotExists(source, Dishes.class);
             BaseDao<Dishes, Integer> dishesDao = new BaseDao<>(source, Dishes.class);
             return dishesDao;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private BaseDao<Table, Integer> initTablesDao() {
+        try {
+            String url = "jdbc:sqlite:database.db";
+            JdbcConnectionSource source = new JdbcConnectionSource(url);
+            TableUtils.createTableIfNotExists(source, Table.class);
+            BaseDao<Table, Integer> tablesDao = new BaseDao<>(source, Table.class);
+            return tablesDao;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -71,6 +105,17 @@ public class AddingCommandController {
             BaseDao<Dishes, Integer> dishesDao = initDishesDao();
             List<Dishes> foundDishes = dishesDao.findAll();
             return foundDishes;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private List<Table> getTablesInfos() {
+        System.out.println("J'ai cliqué sur le bouton");
+        try {
+            BaseDao<Table, Integer> tablesDao = initTablesDao();
+            List<Table> foundTable = tablesDao.findAll();
+            return foundTable;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -110,12 +155,27 @@ public class AddingCommandController {
     @FXML
     private void onValidatedCommand() {
         BaseDao<Commands, Integer> tableDao = initCommandsDao();
-        Commands command = new Commands(dishiesList, 1,"En attente");
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        Commands command = new Commands(dishiesList, 1,"En attente", formatter.format(now));
+
         try {
-            tableDao.create(command);
+            if (vBoxCommand.getChildren().isEmpty()){
+                errorLabel.setText("La commande doit contenir au moins un plat");
+                errorLabel.setStyle("-fx-text-fill: red;");
+                errorLabel.setVisible(true);
+            }
+            else {
+                tableDao.create(command);
+                vBoxCommand.getChildren().clear();
+                errorLabel.setText("Commande ajoutée avec succès");
+                errorLabel.setStyle("-fx-text-fill: green;");
+                errorLabel.setVisible(true);
+            }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            errorLabel.setText("Impossible d'ajouter la commande");
+            errorLabel.setStyle("-fx-text-fill: red;");
+            errorLabel.setVisible(true);
         }
     }
-
 }

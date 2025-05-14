@@ -15,8 +15,6 @@ public class AddingCommandView extends Application {
         stage.setTitle("Gestion des commandes!");
         stage.setScene(scene);
         stage.show();
-
-
     }
 
     public static void main(String[] args) { launch();}
