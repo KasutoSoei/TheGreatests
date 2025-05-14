@@ -21,6 +21,8 @@ public class CommandsController {
     public void initialize() {
         System.out.println("Controller Commands");
 
+        // récupérer et afficher commandes dans la bdd
+
 
     }
 

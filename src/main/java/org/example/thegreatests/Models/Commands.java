@@ -1,12 +1,24 @@
 package org.example.thegreatests.Models;
 
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.List;
 
+@DatabaseTable(tableName = "Commands")
 public class Commands {
+
+    @DatabaseField(generatedId = true)
     private int id;
+
+
     private List<Dishes> dishiesList;
+
+    @DatabaseField
     private Integer idTable;
+
+    @DatabaseField
     private String status;
 
     public Commands() {}
