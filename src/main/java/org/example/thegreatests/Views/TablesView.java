@@ -10,7 +10,6 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import org.example.thegreatests.Controllers.TablesController;
 import org.example.thegreatests.Models.BaseDao;
-import org.example.thegreatests.Models.Employees;
 import org.example.thegreatests.Models.Table;
 
 import java.io.IOException;
