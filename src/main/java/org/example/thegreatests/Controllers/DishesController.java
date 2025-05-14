@@ -55,6 +55,7 @@ public class DishesController {
                 hbox.setPadding(new Insets(5));
 
                 MyListView.getItems().add(hbox);
+
             });
 
         } catch (SQLException e) {
@@ -103,6 +104,9 @@ public class DishesController {
                 DishDao.create(dish);
 
                 popup.close();
+                MyListView.getItems().clear();
+                loadDishes();
+
 
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
