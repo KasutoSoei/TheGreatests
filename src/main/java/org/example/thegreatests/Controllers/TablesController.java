@@ -5,21 +5,15 @@ import com.j256.ormlite.table.TableUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.example.thegreatests.Models.BaseDao;
-import org.example.thegreatests.Models.People;
 import org.example.thegreatests.Models.Table;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TablesController {
     @FXML
@@ -37,6 +31,14 @@ public class TablesController {
     @FXML
     private Label labelClientNumber;
 
+    @FXML
+    private Label labelErrorTable;
+
+    @FXML
+    private Label labelErrorAddClient;
+
+    @FXML
+    private Label labelErrorCreateTable;
 
     @FXML
     private Label paneTableName;
@@ -120,6 +122,7 @@ public class TablesController {
     }
 
     private void openTablePanel(Table t) {
+        labelErrorTable.setText("");
         paneTableName.setText("Table "+t.getLocation());
         paneTable.setVisible(true);
         textFieldTableSize.setText(t.getSize()+"");
@@ -150,6 +153,7 @@ public class TablesController {
         paneTable2.setVisible(true);
         textFieldTableSizeAdd.setText("");
         textFieldTableLocationAdd.setText("");
+        labelErrorCreateTable.setText("");
     }
 
     @FXML
@@ -178,11 +182,16 @@ public class TablesController {
         try {
 
             BaseDao<Table, Integer> tableDao = initTableDao();
-
-            Table table = new Table(Integer.parseInt(textFieldTableSizeAdd.getText()), textFieldTableLocationAdd.getText());
-            tableDao.create(table);
+            try {
+                Table table = new Table(Integer.parseInt(textFieldTableSizeAdd.getText()), textFieldTableLocationAdd.getText());
+                tableDao.create(table);
+            } catch (NumberFormatException e) {
+                labelErrorCreateTable.setText("Erreur : Veuillez entrer un nombre valide");
+                return;
+            }
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            labelErrorCreateTable.setText("Erreur : "+e.getMessage());
+            return;
         }
         closeTablePanel();
         reloadtable();
@@ -194,11 +203,17 @@ public class TablesController {
         try {
             BaseDao<Table, Integer> tableDao = initTableDao();
             Table table = tableDao.findById(currentTableId);
-            table.setSize(Integer.parseInt(textFieldTableSize.getText()));
+            try {
+                table.setSize(Integer.parseInt(textFieldTableSize.getText()));
+            } catch (NumberFormatException e) {
+                labelErrorTable.setText("Erreur : Veuillez entrer un nombre valide");
+                return;
+            }
             table.setLocation(textFieldTableLocation.getText());
             tableDao.update(table);
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            labelErrorTable.setText("Erreur : "+e.getMessage());
+            return;
         }
         closeTablePanel();
         reloadtable();
@@ -234,6 +249,7 @@ public class TablesController {
     @FXML
     private void openClientTable()
     {
+        labelErrorAddClient.setText("");
         paneClientTable.setVisible(true);
     }
 
@@ -244,9 +260,19 @@ public class TablesController {
             Table table = tableDao.findById(currentTableId);
             Integer peopleList = table.getPeopleLenght();
             System.out.println("Liste de Peoples "+peopleList);
-            peopleList += Integer.parseInt(textFieldNbrClientsAdding.getText());
-            table.setPeopleLenght(peopleList);
-            tableDao.update(table);
+            if (peopleList >= table.getSize()) {
+                labelErrorAddClient.setText("Attention : La table est déjà pleine");
+                return;
+            } else {
+                try {
+                    peopleList += Integer.parseInt(textFieldNbrClientsAdding.getText());
+                    table.setPeopleLenght(peopleList);
+                    tableDao.update(table);
+                } catch (NumberFormatException e) {
+                    labelErrorAddClient.setText("Erreur : Veuillez entrer un nombre valide");
+                    return;
+                }
+            }
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
