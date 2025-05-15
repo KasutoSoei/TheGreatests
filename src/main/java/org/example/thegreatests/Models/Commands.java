@@ -1,18 +1,35 @@
 package org.example.thegreatests.Models;
 
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.List;
 
+@DatabaseTable(tableName = "Commands")
 public class Commands {
+
+    @DatabaseField(generatedId = true)
     private int id;
+
     private List<Dishes> dishiesList;
-    private Table table;
+
+    @DatabaseField
+    private Integer idTable;
+
+    @DatabaseField
     private String status;
 
-    public Commands(List<Dishes> dishiesList, Table table, String status) {
+    @DatabaseField
+    private String date;
+
+    public Commands() {}
+
+    public Commands(List<Dishes> dishiesList, Integer idTable, String status, String date) {
         this.dishiesList = dishiesList;
-        this.table = table;
+        this.idTable = idTable;
         this.status = status;
+        this.date = date;
     }
 
     public int getId() {
@@ -27,12 +44,12 @@ public class Commands {
         this.dishiesList = dishiesList;
     }
 
-    public Table getTable() {
-        return table;
+    public Integer getIdTable() {
+        return idTable;
     }
 
-    public void setTable(Table table) {
-        this.table = table;
+    public void setIdTable(Integer idTable) {
+        this.idTable = idTable;
     }
 
     public String getStatus() {
@@ -41,5 +58,13 @@ public class Commands {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }
