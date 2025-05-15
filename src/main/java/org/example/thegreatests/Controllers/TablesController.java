@@ -133,7 +133,7 @@ public class TablesController {
                         t -> {
                             VBox tablePane = new VBox();
                             Label label = new Label("Table "+ t.getLocation() +" - id"+ t.getId() + " (" + t.getStatus() + ")\nCapacité " + t.getSize());
-                            if (t.getPeopleLenght() > 0) {
+                            if (t.getPeopleLength() > 0) {
                                 tablePane.setStyle("-fx-background-color: lightgray");
                             }
                             Button buttonUpdate = new Button("Modifier");
@@ -160,10 +160,10 @@ public class TablesController {
         paneTable.setVisible(true);
         textFieldTableSize.setText(t.getSize()+"");
         textFieldTableLocation.setText(t.getLocation());
-        System.out.println("Liste de Peoples "+t.getPeopleLenght());
-            if (t.getPeopleLenght() > 0) {
+        System.out.println("Liste de Peoples "+t.getPeopleLength());
+            if (t.getPeopleLength() > 0) {
                 buttonCreateCommand.setDisable(false);
-                labelClientNumber.setText("Nombre de clients : " + t.getPeopleLenght());
+                labelClientNumber.setText("Nombre de clients : " + t.getPeopleLength());
             } else {
                 buttonCreateCommand.setDisable(true);
                 labelClientNumber.setText("Aucun client");
@@ -297,7 +297,7 @@ public class TablesController {
         try {
             BaseDao<Table, Integer> tableDao = initTableDao();
             Table table = tableDao.findById(currentTableId);
-            table.setPeopleLenght(0);
+            table.setPeopleLength(0);
             tableDao.update(table);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -326,7 +326,7 @@ public class TablesController {
         try {
             BaseDao<Table, Integer> tableDao = initTableDao();
             Table table = tableDao.findById(currentTableId);
-            Integer peopleList = table.getPeopleLenght();
+            Integer peopleList = table.getPeopleLength();
             System.out.println("Liste de Peoples "+peopleList);
             if (peopleList >= table.getSize()) {
                 labelErrorAddClient.setText("Attention : La table est déjà pleine");
@@ -334,7 +334,7 @@ public class TablesController {
             } else {
                 try {
                     peopleList += Integer.parseInt(textFieldNbrClientsAdding.getText());
-                    table.setPeopleLenght(peopleList);
+                    table.setPeopleLength(peopleList);
                     tableDao.update(table);
                 } catch (NumberFormatException e) {
                     labelErrorAddClient.setText("Erreur : Veuillez entrer un nombre valide");

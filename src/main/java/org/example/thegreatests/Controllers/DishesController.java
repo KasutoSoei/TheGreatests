@@ -34,7 +34,6 @@ public class DishesController {
 
     @FXML
     private ListView<HBox> MyListView;
-    private TextField indexError;
 
     @FXML
     private AnchorPane pane;
@@ -206,11 +205,11 @@ public class DishesController {
         dishDetails.setTitle("Détails du plat");
 
         Label dishDesc = new Label();
-        dishDesc.setText(desc);
+        dishDesc.setText("Description: " + desc);
         dishDesc.setStyle("-fx-font-size: 20px;");
 
         Label dishPrice = new Label();
-        dishPrice.setText(price + "€");
+        dishPrice.setText("Prix: " + price + "€");
         dishPrice.setStyle("-fx-font-size: 20px;");
 
 

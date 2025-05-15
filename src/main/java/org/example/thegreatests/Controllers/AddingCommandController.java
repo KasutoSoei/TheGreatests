@@ -62,7 +62,6 @@ public class AddingCommandController {
     @FXML
     public void initialize() {
 
-        System.out.println("Controller Adding Command");
         showDishesGrid();
         errorLabel.setVisible(false);
         List<Table> tablesInfo = getTablesInfos();

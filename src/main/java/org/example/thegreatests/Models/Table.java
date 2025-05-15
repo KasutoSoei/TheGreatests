@@ -21,7 +21,7 @@ public class Table {
     private String location;
 
     @DatabaseField
-    private Integer peopleLenght;
+    private Integer peopleLength;
 
     public Table() {}
 
@@ -29,20 +29,20 @@ public class Table {
         this.status = "Libre";
         this.size = size;
         this.location = location;
-        this.peopleLenght = 0;
+        this.peopleLength = 0;
     }
 
     public int getId() {
         return id;
     }
 
-    public Integer getPeopleLenght() {
-        return peopleLenght;
+    public Integer getPeopleLength() {
+        return peopleLength;
     }
 
-    public void setPeopleLenght(Integer peopleLenght) {
-        this.peopleLenght = peopleLenght;
-        if (peopleLenght > 0) {
+    public void setPeopleLength(Integer peopleLength) {
+        this.peopleLength = peopleLength;
+        if (peopleLength > 0) {
             this.status = "Occupé";
         } else {
             this.status = "Libre";

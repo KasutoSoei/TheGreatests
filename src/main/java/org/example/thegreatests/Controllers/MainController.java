@@ -34,7 +34,6 @@ public class MainController {
     @FXML
     private void onClickViewCommands() {
         changeScene("/org/example/thegreatests/commands-view.fxml");
-
     }
 
     @FXML

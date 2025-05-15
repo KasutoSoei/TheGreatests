@@ -8,14 +8,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.example.thegreatests.Models.BaseDao;
-import org.example.thegreatests.Models.Commands;
+import org.example.thegreatests.Models.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -58,7 +59,15 @@ public class CommandsController {
 
     @FXML
     public void initialize() {
-        // Initialize columns for CommandList
+        idColumn.setPrefWidth(60);
+        idColumn.setStyle("-fx-alignment: CENTER;");
+        statusColumn.setPrefWidth(122);
+        statusColumn.setStyle("-fx-alignment: CENTER;");
+        dateColumn.setPrefWidth(162);
+        dateColumn.setStyle("-fx-alignment: CENTER;");
+        actionColumn.setPrefWidth(154);
+
+        // Initialise les colonnes de la liste des commandes en cours
         idColumn.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getId()).asObject());
         statusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getStatus()));
         dateColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDate()));
@@ -89,17 +98,24 @@ public class CommandsController {
             }
         });
 
-        // Initialize columns for CommandFinishList
+        finishedIdColumn.setPrefWidth(60);
+        finishedIdColumn.setStyle("-fx-alignment: CENTER;");
+        finishedStatusColumn.setPrefWidth(122);
+        finishedStatusColumn.setStyle("-fx-alignment: CENTER;");
+        finishedDateColumn.setPrefWidth(162);
+        finishedDateColumn.setStyle("-fx-alignment: CENTER;");
+
+        // Initialise les colonnes de la liste des commandes terminées (servies et en attente de paiement)
         finishedIdColumn.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getId()).asObject());
         finishedStatusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getStatus()));
         finishedDateColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDate()));
 
-        // Load data
+
         loadCommands();
         loadCommandsFinish();
     }
 
-    private BaseDao<Commands, Integer> initCommandDishDao() {
+    private BaseDao<Commands, Integer> initCommandDao() {
         try {
             String url = "jdbc:sqlite:database.db";
             JdbcConnectionSource source = new JdbcConnectionSource(url);
@@ -110,15 +126,63 @@ public class CommandsController {
         }
     }
 
+    private BaseDao<CommandDish, Integer> initCommandDishDao(){
+        try {
+            String url = "jdbc:sqlite:database.db";
+            JdbcConnectionSource source = new JdbcConnectionSource(url);
+            TableUtils.createTableIfNotExists(source, CommandDish.class);
+            return new BaseDao<>(source, CommandDish.class);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private BaseDao<Table, Integer> initTablesDao() {
+
+        try {
+            String url = "jdbc:sqlite:database.db";
+            JdbcConnectionSource source = new JdbcConnectionSource(url);
+            TableUtils.createTableIfNotExists(source, Table.class);
+            BaseDao<Table, Integer> tablesDao = new BaseDao<>(source, Table.class);
+            return tablesDao;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private List<Table> getTablesInfos() {
+        System.out.println("J'ai cliqué sur le bouton");
+        try {
+            BaseDao<Table, Integer> tablesDao = initTablesDao();
+            List<Table> foundTable = tablesDao.findAll();
+            return foundTable;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void loadCommands() {
         commandsObservableList.clear();
         try {
-            BaseDao<Commands, Integer> commandsDao = initCommandDishDao();
+            BaseDao<Commands, Integer> commandsDao = initCommandDao();
             List<Commands> foundCommands = commandsDao.findAll();
             commandsObservableList.addAll(foundCommands.stream()
                     .filter(command -> command.getStatus().equals("En attente"))
                     .toList());
             CommandList.setItems(commandsObservableList);
+
+            BaseDao<CommandDish, Integer> commandsDishesDao = initCommandDishDao();
+            List<CommandDish> foundCommandsDish = commandsDishesDao.findAll();
+            foundCommandsDish.stream().forEach(commandDish -> {
+                String dishName = commandDish.getDish().getName();
+                int quantity = commandDish.getQuantity();
+                float price = commandDish.getDish().getPrice();
+
+                CommandList.setOnMouseClicked(event -> {
+                    handleCommandClicked(dishName, quantity, price);
+                });
+            });
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -126,21 +190,47 @@ public class CommandsController {
 
     private void loadCommandsFinish() {
         finishedCommandsObservableList.clear();
+
+        List<Table> tablesInfo = getTablesInfos();
+        List<Integer> tablesWithClients = tablesInfo.stream()
+                .filter(table -> table.getPeopleLength() > 0)
+                .map(table -> table.getId())
+                .toList();
+
         try {
-            BaseDao<Commands, Integer> commandsDao = initCommandDishDao();
+            BaseDao<Commands, Integer> commandsDao = initCommandDao();
             List<Commands> foundCommands = commandsDao.findAll();
             finishedCommandsObservableList.addAll(foundCommands.stream()
                     .filter(command -> command.getStatus().equals("Terminé"))
+                    .filter(command -> tablesWithClients.contains(command.getIdTable())) // On ne garde que les commandes terminées des tables avec encore clients dessus (qui n'ont pas encore payé)
                     .toList());
             CommandFinishList.setItems(finishedCommandsObservableList);
+
+            BaseDao<CommandDish, Integer> commandsDishesDao = initCommandDishDao();
+            List<CommandDish> foundCommandsDish = commandsDishesDao.findAll();
+            foundCommandsDish.stream().forEach(commandDish -> {
+                        String dishName = commandDish.getDish().getName();
+                        int quantity = commandDish.getQuantity();
+                        float price = commandDish.getDish().getPrice();
+
+                    CommandFinishList.setOnMouseClicked(event -> {
+                        handleCommandClicked(dishName, quantity, price);
+                    });
+            });
+
+
+
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+
     }
 
     private void updateCommandStatus(Commands command, String newStatus) {
         try {
-            BaseDao<Commands, Integer> commandsDao = initCommandDishDao();
+            BaseDao<Commands, Integer> commandsDao = initCommandDao();
             command.setStatus(newStatus);
             commandsDao.update(command);
             loadCommands();
@@ -148,6 +238,34 @@ public class CommandsController {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void handleCommandClicked(String dishName, int quantity, float price) {
+
+        Commands selectedCommand = CommandList.getSelectionModel().getSelectedItem();
+        Commands selectedCommandFInish = CommandFinishList.getSelectionModel().getSelectedItem();
+
+        VBox detailsPanel = new VBox(10);
+        detailsPanel.setStyle("-fx-background-color: lightblue;");
+        detailsPanel.setPadding(new Insets(10));
+
+        Stage commandDetails = new Stage();
+        commandDetails.setTitle("Détails de la commande");
+
+        Label dishLabel = new Label("Plat: " + dishName);
+        dishLabel.setStyle("-fx-font-size: 20px;");
+        Label quantityLabel = new Label("Quantité : " + quantity);
+        quantityLabel.setStyle("-fx-font-size: 20px;");
+        Label priceLabel = new Label("Prix : " + price);
+        priceLabel.setStyle("-fx-font-size: 20px;");
+
+        detailsPanel.getChildren().addAll(dishLabel, quantityLabel, priceLabel);
+
+        Scene scene = new Scene(detailsPanel, 400, 160);
+
+        commandDetails.setScene(scene);
+        commandDetails.show();
+
     }
 
     @FXML

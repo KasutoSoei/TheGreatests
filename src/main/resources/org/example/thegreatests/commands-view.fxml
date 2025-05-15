@@ -14,7 +14,7 @@
             <Font size="74.0" />
          </font>
       </Label>
-      <TableView fx:id="CommandFinishList" editable="true" layoutX="722.0" layoutY="250.0" prefHeight="400.0" prefWidth="500.0">
+      <TableView fx:id="CommandFinishList" editable="true" layoutX="722.0" layoutY="250.0"  prefHeight="400.0" prefWidth="500.0">
          <columns>
             <TableColumn fx:id="finishedIdColumn" text="ID" />
             <TableColumn fx:id="finishedStatusColumn" text="Status" />
