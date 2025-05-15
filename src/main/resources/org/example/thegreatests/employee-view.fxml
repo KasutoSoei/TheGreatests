@@ -32,12 +32,14 @@
                <TextField fx:id="nameTextField" layoutX="73.0" layoutY="139.0" prefHeight="25.0" prefWidth="307.0" promptText="Bernard" />
                <Label layoutX="57.0" layoutY="166.0" text="Poste :" />
                <TextField fx:id="postTextField" layoutX="73.0" layoutY="183.0" prefHeight="25.0" prefWidth="307.0" promptText="Serveur" />
+               <Label layoutX="57.0" layoutY="206.0" text="Age :" />
+               <TextField fx:id="ageTextField" layoutX="73.0" layoutY="223.0" prefHeight="25.0" prefWidth="307.0" promptText="37" />
                <Button layoutX="679.0" layoutY="14.0" mnemonicParsing="false" onAction="#closeEmployeePanel" text="X" />
                <Button fx:id="buttonDeleteEmployee" layoutX="14.0" layoutY="569.0" mnemonicParsing="false" onAction="#deleteEmployee" prefHeight="32.0" prefWidth="168.0" text="Supprimer l'employé" textFill="RED" />
-               <Label layoutX="57.0" layoutY="205.0" prefHeight="32.0" prefWidth="99.0" text="Heure travaillées :" textFill="#0b0b0b" />
-                <Label fx:id="houreEmployeeLabel" layoutX="70.0" layoutY="237.0" prefHeight="17.0" prefWidth="247.0" text="HEURE" />
+               <Label layoutX="57.0" layoutY="246.0" prefHeight="32.0" prefWidth="99.0" text="Heure travaillées :" textFill="#0b0b0b" />
+                <Label fx:id="houreEmployeeLabel" layoutX="73.0" layoutY="278.0" prefHeight="17.0" prefWidth="247.0" text="HEURE" />
                <Button layoutX="391.0" layoutY="159.0" mnemonicParsing="false" onAction="#updateEmployee" prefHeight="32.0" prefWidth="109.0" text="Mettre à jour" />
-               <Button layoutX="66.0" layoutY="257.0" mnemonicParsing="false" onAction="#openAddEmployeeHoures" prefHeight="32.0" prefWidth="189.0" text="Ajouter des heures de travail" />
+               <Button layoutX="62.0" layoutY="308.0" mnemonicParsing="false" onAction="#openAddEmployeeHoures" prefHeight="32.0" prefWidth="189.0" text="Ajouter des heures de travail" />
            </children>
        </Pane>
        <Pane fx:id="paneEmployeeCreateEmployee" layoutX="256.0" layoutY="16.0" prefHeight="615.0" prefWidth="717.0" style="-fx-background-color: lightblue;" visible="false">
@@ -51,7 +53,9 @@
                <TextField fx:id="nameTextFieldAdd" layoutX="57.0" layoutY="139.0" prefHeight="25.0" prefWidth="307.0" promptText="Bernard" />
                <Label layoutX="57.0" layoutY="166.0" text="Poste de l'employé" />
                <TextField fx:id="postTextFieldAdd" layoutX="57.0" layoutY="183.0" prefHeight="25.0" prefWidth="307.0" promptText="Serveur" />
-               <Button layoutX="392.0" layoutY="139.0" mnemonicParsing="false" onAction="#createEmployee" prefHeight="69.0" prefWidth="85.0" text="Créé" />
+               <Label layoutX="57.0" layoutY="216.0" text="Age de l'employée" />
+               <TextField fx:id="ageTextFieldAdd" layoutX="57.0" layoutY="233.0" prefHeight="25.0" prefWidth="307.0" promptText="37" />
+               <Button layoutX="393.0" layoutY="162.0" mnemonicParsing="false" onAction="#createEmployee" prefHeight="69.0" prefWidth="85.0" text="Créé" />
                <Button layoutX="679.0" layoutY="14.0" mnemonicParsing="false" onAction="#closeEmployeePanel" text="X" />
            </children>
        </Pane>
@@ -73,5 +77,7 @@
            <fx:include fx:id="appBar" source="appBar-view.fxml" />
        </Pane>
       <Button layoutX="57.0" layoutY="3.0" mnemonicParsing="false" onAction="#onClickBack" text="Retour" />
+      <Label fx:id="lessThan30" layoutX="551.0" layoutY="19.0" prefHeight="17.0" prefWidth="265.0" text="NOMBRE EMPLOYEE -30ANS" />
+       <Label fx:id="moreThan30" layoutX="841.0" layoutY="18.0" prefHeight="17.0" prefWidth="258.0" text="NOMBRE EMPLOYEE +30ANS" />
    </children>
 </Pane>
