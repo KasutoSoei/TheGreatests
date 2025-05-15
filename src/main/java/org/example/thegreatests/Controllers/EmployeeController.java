@@ -3,6 +3,9 @@ package org.example.thegreatests.Controllers;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -10,9 +13,11 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.example.thegreatests.Models.BaseDao;
 import org.example.thegreatests.Models.Employees;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -50,6 +55,9 @@ public class EmployeeController {
 
     @FXML
     private Integer currentEmployeeId;
+
+    @FXML
+    private Pane pane;
 
     /**
      * This method is used to initialize the EmployeeController.
@@ -239,6 +247,25 @@ public class EmployeeController {
             return new BaseDao<>(source, Employees.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
+    private void onClickBack() {
+        changeScene("/org/example/thegreatests/main-view.fxml");
+
+    }
+
+    private void changeScene(String ressourcePath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(ressourcePath));
+            Parent root = loader.load();
+            Stage stage = (Stage) pane.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

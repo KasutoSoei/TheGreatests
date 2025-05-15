@@ -71,6 +71,9 @@ public class TablesController {
 
     private Integer currentTableId;
 
+    @FXML
+    private Pane pane;
+
     /**
      * This method is used to initialize the TablesController.
      */
@@ -362,6 +365,25 @@ public class TablesController {
             }
 
             Stage stage = (Stage) paneTable.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void onClickBack() {
+        changeScene("/org/example/thegreatests/main-view.fxml");
+
+    }
+
+    private void changeScene(String ressourcePath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(ressourcePath));
+            Parent root = loader.load();
+            Stage stage = (Stage) pane.getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.show();

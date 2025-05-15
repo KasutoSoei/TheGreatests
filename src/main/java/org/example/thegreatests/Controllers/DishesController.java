@@ -4,13 +4,16 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -21,6 +24,8 @@ import org.example.thegreatests.Models.Dishes;
 import javafx.scene.control.Label;
 import javafx.geometry.Insets;
 import javafx.scene.image.Image;
+
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -30,6 +35,9 @@ public class DishesController {
     @FXML
     private ListView<HBox> MyListView;
     private TextField indexError;
+
+    @FXML
+    private AnchorPane pane;
 
     /**
      * This method is used to initialize the DishesController.
@@ -214,6 +222,25 @@ public class DishesController {
         dishDetails.show();
 
         }
+
+    @FXML
+    private void onClickBack() {
+        changeScene("/org/example/thegreatests/main-view.fxml");
+
+    }
+
+    private void changeScene(String ressourcePath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(ressourcePath));
+            Parent root = loader.load();
+            Stage stage = (Stage) pane.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 

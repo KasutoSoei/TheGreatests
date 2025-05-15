@@ -6,6 +6,9 @@ import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -14,13 +17,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.example.thegreatests.Models.BaseDao;
 import org.example.thegreatests.Models.Commands;
 import org.example.thegreatests.Models.Dishes;
 import org.example.thegreatests.Models.Table;
 import org.example.thegreatests.Views.CommandsView;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -49,6 +55,9 @@ public class AddingCommandController {
     private ComboBox <String> selectTable;
 
     private String SelectValue;
+
+    @FXML
+    private Pane pane;
 
     /**
      * This method is used to initialize the AddingCommandController.
@@ -254,6 +263,24 @@ public class AddingCommandController {
             selectTable.setDisable(true);
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
+    private void onClickBackToTables() {
+        changeScene("/org/example/thegreatests/tables-view.fxml");
+    }
+
+    private void changeScene(String ressourcePath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(ressourcePath));
+            Parent root = loader.load();
+            Stage stage = (Stage) pane.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

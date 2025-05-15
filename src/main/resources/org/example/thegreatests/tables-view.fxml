@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.thegreatests.Controllers.TablesController">
+<Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.thegreatests.Controllers.TablesController">
     <children>
       <Label fx:id="tableView" text="Tables" />
       <GridPane fx:id="gridPane" gridLinesVisible="true" layoutX="37.0" layoutY="48.0" prefHeight="669.0" prefWidth="1207.0">
@@ -89,5 +89,6 @@
         <Pane layoutX="1130.0" layoutY="660.0">
             <fx:include fx:id="appBar" source="appBar-view.fxml" />
         </Pane>
+      <Button layoutX="48.0" layoutY="1.0" mnemonicParsing="false" onAction="#onClickBack" text="Retour" />
     </children>
 </Pane>

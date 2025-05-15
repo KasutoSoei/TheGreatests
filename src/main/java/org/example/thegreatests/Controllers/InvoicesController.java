@@ -6,6 +6,7 @@ import com.j256.ormlite.table.TableUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.print.PrinterJob;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -52,6 +53,9 @@ public class InvoicesController {
 
     @FXML
     private TextArea textInvoiceDescription;
+
+    @FXML
+    private Pane pane;
 
     private BaseDao<Invoices, Integer> initInvoicesDao() {
         /**
@@ -236,6 +240,25 @@ public class InvoicesController {
 
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/thegreatests/pdf-invoices.fxml"));
         fxmlLoader.load();
+    }
+
+    @FXML
+    private void onClickBack() {
+        changeScene("/org/example/thegreatests/main-view.fxml");
+
+    }
+
+    private void changeScene(String ressourcePath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(ressourcePath));
+            Parent root = loader.load();
+            Stage stage = (Stage) pane.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
