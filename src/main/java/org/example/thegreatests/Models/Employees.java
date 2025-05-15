@@ -15,15 +15,19 @@ public class Employees extends People {
     @DatabaseField
     private int workedHours;
 
+    @DatabaseField
+    private Integer age;
+
     public Employees() {
         super(0);
     }
 
-    public Employees(String name, String job) {
+    public Employees(String name, String job, Integer age) {
         super(0);
         this.name = name;
         this.job = job;
         this.workedHours = 0;
+        this.age = age;
     }
 
     public int getId() {
@@ -54,5 +58,11 @@ public class Employees extends People {
         this.workedHours = workedHours;
     }
 
+    public Integer getAge() {
+        return age;
+    }
 
+    public void setAge(Integer age) {
+        this.age = age;
+    }
 }

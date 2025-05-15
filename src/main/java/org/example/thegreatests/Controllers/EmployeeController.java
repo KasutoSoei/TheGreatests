@@ -42,6 +42,12 @@ public class EmployeeController {
     private TextField nameTextField;
 
     @FXML
+    private TextField ageTextField;
+
+    @FXML
+    private TextField ageTextFieldAdd;
+
+    @FXML
     private TextField nameTextFieldAdd;
 
     @FXML
@@ -52,6 +58,12 @@ public class EmployeeController {
 
     @FXML
     private Label houreEmployeeLabel;
+
+    @FXML
+    private Label moreThan30;
+
+    @FXML
+    private Label lessThan30;
 
     @FXML
     private Integer currentEmployeeId;
@@ -67,7 +79,18 @@ public class EmployeeController {
         List<Employees> foundEmployees = getEmployeeInfo();
         showEmployeeTable(foundEmployees);
 
+        moreThan30.setText("Nombre d'employées de + de 30 ans : " + foundEmployees.stream().filter(e -> e.getAge() > 30).count());
+        lessThan30.setText("Nombre d'employées de - de 30 ans : " + foundEmployees.stream().filter(e -> e.getAge() <= 30).count());
+
         textFieldHoures.setTextFormatter(new TextFormatter<String>(change -> {
+            String newText = change.getControlNewText();
+            if (newText.matches("\\d*")) {
+                return change;
+            }
+            return null;
+        }));
+
+        ageTextFieldAdd.setTextFormatter(new TextFormatter<String>(change -> {
             String newText = change.getControlNewText();
             if (newText.matches("\\d*")) {
                 return change;
@@ -106,8 +129,12 @@ public class EmployeeController {
     private void reloadEmployee() {
 
         employeeGridPane.getChildren().retainAll(employeeGridPane.getChildren().get(0));
-        List<Employees> foundEmployee = getEmployeeInfo();
-        showEmployeeTable(foundEmployee);
+        List<Employees> foundEmployees = getEmployeeInfo();
+        showEmployeeTable(foundEmployees);
+
+        moreThan30.setText("Nombre d'employées de + de 30 ans : " + foundEmployees.stream().filter(e -> e.getAge() > 30).count());
+        lessThan30.setText("Nombre d'employées de - de 30 ans : " + foundEmployees.stream().filter(e -> e.getAge() <= 30).count());
+
     }
 
     /**
@@ -118,7 +145,7 @@ public class EmployeeController {
 
         try{
             BaseDao<Employees, Integer> employeesDao = initEmployeeDao();
-            Employees employees = new Employees(nameTextFieldAdd.getText(), postTextFieldAdd.getText());
+            Employees employees = new Employees(nameTextFieldAdd.getText(), postTextFieldAdd.getText(), Integer.parseInt(ageTextFieldAdd.getText()));
             employeesDao.create(employees);
         } catch (SQLException e){
             throw new RuntimeException(e);
@@ -154,6 +181,7 @@ public class EmployeeController {
             Employees employees = employeeDao.findById(currentEmployeeId);
             employees.setJob(postTextField.getText());
             employees.setName(nameTextField.getText());
+            employees.setAge(Integer.parseInt(ageTextField.getText()));
             employeeDao.update(employees);
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -200,6 +228,7 @@ public class EmployeeController {
         paneEmployee.setVisible(true);
         nameTextField.setText(e.getName());
         postTextField.setText(e.getJob());
+        ageTextField.setText(e.getAge().toString());
         houreEmployeeLabel.setText(e.getWorkedHours()+"h");
     }
 
