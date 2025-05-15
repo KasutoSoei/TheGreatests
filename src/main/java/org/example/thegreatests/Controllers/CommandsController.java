@@ -16,6 +16,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.thegreatests.Models.BaseDao;
+import org.example.thegreatests.Models.CommandDish;
 import org.example.thegreatests.Models.Commands;
 
 import java.io.IOException;
@@ -25,7 +26,10 @@ import java.util.List;
 public class CommandsController {
 
     @FXML
-    private ListView<HBox> MyListView;
+    private ListView<HBox> CommandList;
+
+    @FXML
+    private ListView<HBox> CommandFinishList;
 
     @FXML
     private Pane pane;
@@ -36,25 +40,40 @@ public class CommandsController {
     @FXML
     public void initialize() {
         loadCommands();
+        loadCommandsFinish();
+    }
+
+
+    /**
+     * This function is used to initialize the commands DAO.
+     * @return BaseDao<Commands, Integer> The commands DAO.
+     */
+    private BaseDao<Commands, Integer> initCommandDishDao() {
+        try {
+            String url = "jdbc:sqlite:database.db";
+            JdbcConnectionSource source = new JdbcConnectionSource(url);
+            TableUtils.createTableIfNotExists(source, Commands.class);
+            BaseDao<Commands, Integer> CommandsDao = new BaseDao<>(source, Commands.class);
+            return CommandsDao;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**
      * This method is used to load the commands from the database and display them in the ListView.
      */
     private void loadCommands() {
-        MyListView.getItems().clear();
+        CommandList.getItems().clear();
+
         try {
-            String url = "jdbc:sqlite:database.db";
-            JdbcConnectionSource source = new JdbcConnectionSource(url);
+            BaseDao<Commands, Integer> CommandsDao = initCommandDishDao();
 
-            TableUtils.createTableIfNotExists(source, Commands.class);
-            BaseDao<Commands, Integer> tableDao = new BaseDao<>(source, Commands.class);
+            List<Commands> foundCommands = CommandsDao.findAll();
 
-            List<Commands> foundCommands = tableDao.findAll();
-
-            foundCommands.stream().filter(command -> !command.getStatus().equals("Annulée")).forEach(command -> {
+            foundCommands.stream().filter(command -> command.getStatus().equals("En attente")).forEach(command -> {
                 Label label = new Label("Commande n°" + command.getId() + " - " + command.getStatus() + " - " + command.getDate());
-                label.setStyle("-fx-font-size: 20px;");
+                label.setStyle("-fx-font-size: 15px;");
 
                 Button deleteBtn = new Button("Annuler");
                 if (command.getStatus().equals("Terminé")) {
@@ -64,8 +83,8 @@ public class CommandsController {
                     deleteBtn.setOnAction(e -> {
                         try {
                             command.setStatus("Annulée");
-                            tableDao.update(command);
-                            MyListView.getItems().clear();
+                            CommandsDao.update(command);
+                            CommandList.getItems().clear();
                             loadCommands();
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
@@ -80,8 +99,10 @@ public class CommandsController {
                     doneBtn.setOnAction(e -> {
                         try {
                             command.setStatus("Terminé");
-                            tableDao.update(command);
-                            MyListView.getItems().clear();
+                            CommandsDao.update(command);
+                            CommandList.getItems().clear();
+                            CommandFinishList.getItems().clear();
+                            loadCommandsFinish();
                             loadCommands();
                         } catch (SQLException ex) {
                             throw new RuntimeException(ex);
@@ -98,7 +119,7 @@ public class CommandsController {
                 hbox.setPadding(new Insets(5));
                 hbox.setAlignment(Pos.CENTER_LEFT);
 
-                MyListView.getItems().add(hbox);
+                CommandList.getItems().add(hbox);
             });
 
         } catch (SQLException e) {
@@ -106,10 +127,34 @@ public class CommandsController {
         }
     }
 
+    private void loadCommandsFinish () {
+        BaseDao<Commands, Integer> CommandsDao = initCommandDishDao();
+
+        try{
+        List<Commands> foundCommands = CommandsDao.findAll();
+
+        foundCommands.stream().limit(6).filter(command -> command.getStatus().equals("Terminé")).forEach(command -> {
+            Label label = new Label("Commande n°" + command.getId() + " - " + command.getStatus() + " - " + command.getDate());
+            label.setStyle("-fx-font-size: 15px;");
+
+            VBox labelContainer = new VBox(label);
+            labelContainer.setAlignment(Pos.CENTER_LEFT);
+
+            HBox hbox = new HBox(10, labelContainer);
+            hbox.setPadding(new Insets(5));
+            hbox.setAlignment(Pos.CENTER_LEFT);
+
+            CommandFinishList.getItems().add(hbox);
+        });
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    }
+
     @FXML
     private void onClickBack() {
         changeScene("/org/example/thegreatests/main-view.fxml");
-
     }
 
     private void changeScene(String ressourcePath) {
