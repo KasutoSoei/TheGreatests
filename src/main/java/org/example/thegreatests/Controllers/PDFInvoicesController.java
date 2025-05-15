@@ -47,9 +47,12 @@ public class PDFInvoicesController {
         setProfitsAndExpenses();
         showInvoices();
         PrinterJob job = PrinterJob.createPrinterJob();
-        if(job != null){
+        if (job != null && job.getPrinter() != null) {
             job.printPage(page);
             job.endJob();
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Aucune imprimante virtuelle détectée.\nVeuillez installer une imprimante PDF virtuelle\n(ex: Microsoft Print to PDF) pour exporter en PDF.", ButtonType.OK);
+            alert.showAndWait();
         }
 
     }

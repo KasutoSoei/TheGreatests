@@ -7,9 +7,9 @@
 <Pane fx:id="pane" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.thegreatests.Controllers.InvoicesController">
    <children>
       <Label fx:id="tableView" text="Factures" />
-      <ScrollPane fx:id="scrollPane" fitToHeight="true" layoutX="52.0" layoutY="102.0" prefHeight="592.0" prefWidth="1132.0">
+      <ScrollPane fx:id="scrollPane" fitToHeight="true" layoutX="52.0" layoutY="102.0" prefHeight="567.0" prefWidth="1132.0">
          <content>
-            <VBox fx:id="vBoxInvoices" minHeight="-Infinity" minWidth="-Infinity" prefWidth="1108.0" spacing="5.0" />
+            <VBox fx:id="vBoxInvoices" minHeight="-Infinity" minWidth="-Infinity" prefHeight="596.0" prefWidth="1108.0" spacing="5.0" />
          </content>
       </ScrollPane>
       <HBox layoutX="52.0" layoutY="42.0" prefHeight="46.0" prefWidth="838.0">
@@ -27,7 +27,7 @@
          </children>
       </HBox>
       <Button layoutX="1130.0" layoutY="42.0" mnemonicParsing="false" onAction="#openInvoiceCreationModal" text="Créer une facture" />
-      <Pane fx:id="paneFactureCreation" layoutX="256.0" layoutY="32.0" prefHeight="615.0" prefWidth="717.0" style="-fx-background-color: lightblue;">
+      <Pane fx:id="paneFactureCreation" layoutX="256.0" layoutY="32.0" prefHeight="615.0" prefWidth="717.0" style="-fx-background-color: lightblue;" visible="false">
          <children>
             <Label alignment="CENTER" layoutX="24.0" layoutY="22.0" prefHeight="93.0" prefWidth="637.0" text="Créer une facture" textAlignment="CENTER">
                <font>
@@ -51,7 +51,7 @@
          </children></Pane>
       <Button layoutX="1017.0" layoutY="42.0" mnemonicParsing="false" onAction="#onExportPDF" text="Exporter en PDF" />
       <Button layoutX="52.0" layoutY="1.0" mnemonicParsing="false" onAction="#onClickBack" text="Retour" />
-      <Pane layoutX="860.0" layoutY="42.0">
+      <Pane layoutX="1155.0" layoutY="672.0">
          <fx:include fx:id="appBar" source="appBar-view.fxml" />
       </Pane>
    </children>
