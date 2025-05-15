@@ -56,59 +56,17 @@ public class DishesController {
      * This method is used to initialize the DishesController.
      */
     public void initialize() {
-        loadDishes();
-        priceIndicators();
+        displayDishes(null);
 
         SearchBtn.setOnAction(e -> {
-            MyListView.getItems().clear();
             String keyword = searchBar.getText().trim();
-            if (keyword.isEmpty()) {
-                loadDishes();
-            } else {
-                searchDishes(keyword);             }
+            displayDishes(keyword);
         });
     }
 
-    private void searchDishes(String keyword) {
-
-        List<Dishes> foundDishes = getDishesInfos();
-        BaseDao<Dishes, Integer> DishesDao = initDishesDao();
-
-        foundDishes.stream()
-                .filter(dish -> dish.getName().toLowerCase().contains(keyword.toLowerCase()))
-                .forEach(dish -> {
-                    ImageView img = new ImageView(new Image(dish.getImage(), true));
-                    img.setFitWidth(80);
-                    img.setFitHeight(60);
-
-                    Button deleteBtn = new Button("Supprimer");
-                    deleteBtn.setOnAction(e -> {
-                        try {
-                            DishesDao.deleteById(dish.getId());
-                            searchDishes(keyword); // recharger après suppression
-                            priceIndicators();
-                        } catch (SQLException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    });
-
-                    Label label = new Label(dish.getName());
-                    label.setStyle("-fx-font-size: 25px;");
-
-                    VBox labelContainer = new VBox(label);
-                    labelContainer.setAlignment(Pos.CENTER);
-                    VBox deleteBtnContainer = new VBox(deleteBtn);
-                    deleteBtnContainer.setAlignment(Pos.CENTER);
-                    HBox hbox = new HBox(10, img, labelContainer, deleteBtnContainer);
-                    hbox.setPadding(new Insets(5));
-
-                    hbox.setOnMouseClicked(event -> handleDishClicked(dish.getDescription(), dish.getPrice()));
-
-                    MyListView.getItems().add(hbox);
-                });
-    }
-
-
+    /**
+     * This method is used to initialize the order with minimum and maximum prices and sum of all dishes.
+     */
     private void priceIndicators() {
         List<Dishes> Dishes = getDishesInfos();
         Optional<Dishes> mostExpensive = Dishes.stream()
@@ -171,53 +129,50 @@ public class DishesController {
     }
 
     /**
-     * This method is used to load the dishes from the database and display them in the ListView.
+     * This method is used to initialize the Dishes in listview and search bar.
      */
-    private void loadDishes() {
-            BaseDao<Dishes, Integer> DishesDao = initDishesDao();
+    private void displayDishes(String keyword) {
+        MyListView.getItems().clear();
+        BaseDao<Dishes, Integer> dishesDao = initDishesDao();
+        List<Dishes> allDishes = getDishesInfos();
 
-            List<Dishes> foundDishes = getDishesInfos();
+        allDishes.stream()
+                .filter(dish -> keyword == null || keyword.isEmpty() || dish.getDescription().toLowerCase().contains(keyword.toLowerCase()))
+                .forEach(dish -> {
+                    ImageView img = new ImageView(new Image(dish.getImage(), true));
+                    img.setFitWidth(80);
+                    img.setFitHeight(60);
 
-            foundDishes.stream().forEach(dish -> {
-                ImageView img = new ImageView(new Image(dish.getImage(), true));
-                img.setFitWidth(80);
-                img.setFitHeight(60);
+                    Button deleteBtn = new Button("Supprimer");
+                    deleteBtn.setOnAction(e -> {
+                        try {
+                            dishesDao.deleteById(dish.getId());
+                            displayDishes(keyword); // recharge après suppression
+                            priceIndicators();
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    });
 
+                    Label label = new Label(dish.getName());
+                    label.setStyle("-fx-font-size: 25px;");
 
-                Button deleteBtn = new Button("Supprimer");
-                deleteBtn.setOnAction(e -> {
-                    try {
-                        DishesDao.deleteById(dish.getId());
-                        MyListView.getItems().clear();
-                        loadDishes();
-                        priceIndicators();
-                    } catch (SQLException ex) {
-                        throw new RuntimeException(ex);
-                    }
+                    VBox labelContainer = new VBox(label);
+                    labelContainer.setAlignment(Pos.CENTER);
+                    VBox deleteBtnContainer = new VBox(deleteBtn);
+                    deleteBtnContainer.setAlignment(Pos.CENTER);
+
+                    HBox hbox = new HBox(10, img, labelContainer, deleteBtnContainer);
+                    hbox.setPadding(new Insets(5));
+
+                    hbox.setOnMouseClicked(event -> handleDishClicked(dish.getDescription(), dish.getPrice()));
+
+                    MyListView.getItems().add(hbox);
                 });
 
-                Label label = new Label(dish.getName());
-                label.setStyle("-fx-font-size: 25px;");
-
-                String desc = dish.getDescription();
-                Float price = dish.getPrice();
-
-                VBox labelContainer = new VBox(label);
-                labelContainer.setAlignment(Pos.CENTER);
-                VBox deleteBtnContainer = new VBox(deleteBtn);
-                deleteBtnContainer.setAlignment(Pos.CENTER);
-                HBox hbox = new HBox(10, img, labelContainer, deleteBtnContainer);
-                hbox.setPadding(new Insets(5));
-
-                hbox.setOnMouseClicked(event -> {
-                    handleDishClicked(desc, price);
-                });
-
-                MyListView.getItems().add(hbox);
-                priceIndicators();
-
-            });
+        priceIndicators(); // à appeler une seule fois ici
     }
+
 
 
     /**
@@ -282,8 +237,8 @@ public class DishesController {
                     DishDao.create(dish);
 
                     popup.close();
-                    MyListView.getItems().clear();
-                    loadDishes();
+                    displayDishes(null);
+
 
             } catch (NumberFormatException ex) {
                 if (!panel.getChildren().contains(errorLabel)) {
