@@ -27,9 +27,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class AddingCommandController {
@@ -52,6 +50,8 @@ public class AddingCommandController {
     private ComboBox <String> selectTable;
 
     private String SelectValue;
+
+    private final Map<Dishes, Integer> dishesCountMap = new HashMap<>();
 
     @FXML
     private Pane pane;
@@ -127,6 +127,18 @@ public class AddingCommandController {
         }
     }
 
+    private BaseDao<CommandDish, Integer> initCommandDishDao() {
+        try {
+            String url = "jdbc:sqlite:database.db";
+            JdbcConnectionSource source = new JdbcConnectionSource(url);
+            TableUtils.createTableIfNotExists(source, CommandDish.class);
+            BaseDao<CommandDish, Integer> commandDishDao = new BaseDao<>(source, CommandDish.class);
+            return commandDishDao;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * This function is used to get the dishes information from the database.
      * @return List<Dishes> The list of dishes.
@@ -161,18 +173,52 @@ public class AddingCommandController {
      * This method is used to add a dish to the command.
      * @param d The dish to add.
      */
-    private void addingDishesToCommand(Dishes d) {
-        System.out.println("Ajout de " + d.getName() + " à la commande");
+    private void addingDishesToCommand(Dishes dish) {
+        // Met à jour la quantité du plat
+        dishesCountMap.put(dish, dishesCountMap.getOrDefault(dish, 0) + 1);
+
+        // Rafraîchit l'affichage
+        refreshCommandDisplay();
+    }
+
+    private void refreshCommandDisplay() {
+        vBoxCommand.getChildren().clear();
+
+        for (Map.Entry<Dishes, Integer> entry : dishesCountMap.entrySet()) {
+            Dishes dish = entry.getKey();
+            int quantity = entry.getValue();
+
+            HBox dishBox = createDishBox(dish, quantity);
+            vBoxCommand.getChildren().add(dishBox);
+        }
+    }
+    private HBox createDishBox(Dishes dish, int quantity) {
         HBox dishBox = new HBox();
         dishBox.setSpacing(10);
-        ImageView img = new ImageView(new Image(d.getImage(), true));
+
+        // Affichage de l'image
+        ImageView img = new ImageView(new Image(dish.getImage(), true));
         img.setFitWidth(80);
         img.setFitHeight(60);
-        Label name = new Label(d.getName());
-        Label price = new Label(d.getPrice()+" €");
-        dishBox.getChildren().addAll(img,name,price);
-        vBoxCommand.getChildren().add(dishBox);
-        vBoxCommand.setPrefHeight(vBoxCommand.getPrefHeight());
+
+        // Nom + quantité + prix
+        Label name = new Label(dish.getName() + " x" + quantity);
+        Label price = new Label(dish.getPrice() + " €");
+
+        // Bouton supprimer
+        Button deleteBtn = new Button("retirer");
+        deleteBtn.setOnAction(e -> {
+            int currentQuantity = dishesCountMap.getOrDefault(dish, 0);
+            if (currentQuantity > 1) {
+                dishesCountMap.put(dish, currentQuantity - 1);
+            } else {
+                dishesCountMap.remove(dish);
+            }
+            refreshCommandDisplay(); // Mise à jour de l'affichage
+        });
+
+        dishBox.getChildren().addAll(img, name, price, deleteBtn);
+        return dishBox;
     }
 
     /**
@@ -191,7 +237,7 @@ public class AddingCommandController {
             });
             System.out.println("Name: " + d.getName());
             cell.getChildren().addAll(name,addingToCommand);
-            gridPane.getChildren().add(cell);
+            gridPane.add(cell, foundDishes.indexOf(d)%5, foundDishes.indexOf(d)/5);
         });
 
     }
@@ -201,8 +247,8 @@ public class AddingCommandController {
      */
     @FXML
     private void onValidatedCommand() {
-
-        BaseDao<Commands, Integer> tableDao = initCommandsDao();
+        BaseDao<Commands, Integer> commandDao = initCommandsDao();
+        BaseDao<CommandDish, Integer> commandDishDao = initCommandDishDao();
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -222,7 +268,7 @@ public class AddingCommandController {
                 .findFirst();
         int idTable = selectedTable.get().getId();
 
-        Commands command = new Commands(dishiesList, idTable,"En attente", formatter.format(now));
+        Commands command = new Commands(idTable,"En attente", formatter.format(now));
         GlobalChrono chrono = GlobalChrono.getInstance();
         try {
             if (chrono.isUnder15Minutes()){throw new SQLException();}
@@ -232,7 +278,7 @@ public class AddingCommandController {
                 errorLabel.setVisible(true);
             }
             else {
-                tableDao.create(command);
+                commandDao.create(command);
                 vBoxCommand.getChildren().clear();
                 errorLabel.setText("Commande ajoutée avec succès");
                 errorLabel.setStyle("-fx-text-fill: green;");
@@ -243,6 +289,20 @@ public class AddingCommandController {
             errorLabel.setStyle("-fx-text-fill: red;");
             errorLabel.setVisible(true);
         }
+
+        for (Map.Entry<Dishes, Integer> entry : dishesCountMap.entrySet()) {
+            Dishes dish = entry.getKey();
+            int quantity = entry.getValue();
+
+            CommandDish commandDish = new CommandDish(command, dish, quantity);
+            System.out.println("la commande : " + command.getId() + " dish : " + dish + "quantity : " + quantity);
+            try {
+                commandDishDao.create(commandDish);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        dishesCountMap.clear();
     }
 
     /**
