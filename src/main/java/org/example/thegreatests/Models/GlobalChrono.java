@@ -70,4 +70,8 @@ public class GlobalChrono {
     public void setOnTick(Runnable onTick) {
         this.onTick = onTick;
     }
+
+    public boolean isRunning() {
+        return scheduler != null && !scheduler.isShutdown();
+    }
 }

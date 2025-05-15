@@ -16,6 +16,7 @@ public class AppBarController {
 
     private boolean alreadyStarted = false;
 
+    @FXML
     public void initialize() {
         GlobalChrono chrono = GlobalChrono.getInstance();
 
@@ -24,9 +25,12 @@ public class AppBarController {
 
             if (chrono.getTimeLeftInSeconds() <= 0) {
                 startButton.setDisable(false);
-                alreadyStarted = false;
             }
         }));
+
+        // 🧠 Synchronise le bouton avec l'état réel du chrono
+        timerLabel.setText(chrono.getFormattedTime());
+        startButton.setDisable(chrono.isRunning());
     }
 
     @FXML

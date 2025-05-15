@@ -2,20 +2,28 @@ package org.example.thegreatests.Controllers;
 
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.example.thegreatests.Models.BaseDao;
 import org.example.thegreatests.Models.Table;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
 public class TablesController {
+
     @FXML
     private GridPane gridPane;
 
@@ -207,6 +215,14 @@ public class TablesController {
         }
         closeTablePanel();
         reloadtable();
+    }
+
+    public void handleChangeScene(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("/org/example/thegreatests/Employee-view.fxml"));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 
     private BaseDao<Table, Integer> initTableDao() {
