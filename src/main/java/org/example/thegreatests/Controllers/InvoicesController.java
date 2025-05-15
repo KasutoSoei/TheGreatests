@@ -57,6 +57,9 @@ public class InvoicesController {
     @FXML
     private Pane pane;
 
+    @FXML
+    private ComboBox selectInvoices;
+
     private BaseDao<Invoices, Integer> initInvoicesDao() {
         /**
          * This function is used to initialize the InvoicesDao.
@@ -80,8 +83,22 @@ public class InvoicesController {
     public void initialize() {
         setProfitsAndExpenses();
         showInvoices();
+        initializeSelectionInvoices();
+        selectInvoices.setValue("Sélectionner une facture");
     }
 
+
+    private void initializeSelectionInvoices() {
+        try {
+            BaseDao<Invoices, Integer> tableDao = initInvoicesDao();
+            List<Invoices> invoices = tableDao.findAll();
+            invoices.stream().forEach(i->{
+                selectInvoices.getItems().add(i.getDescription());
+            });
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
     /**
      * This method is used to update the text in the text field.
      */
