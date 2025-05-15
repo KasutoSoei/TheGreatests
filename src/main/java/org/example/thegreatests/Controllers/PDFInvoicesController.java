@@ -37,8 +37,12 @@ public class PDFInvoicesController {
     private float profits;
     private float expenses;
 
+    /**
+     * This method is used to initialize the PDFInvoicesController.
+     */
     @FXML
     public void initialize() {
+
         System.out.println("Exportation en PDF");
         setProfitsAndExpenses();
         showInvoices();
@@ -50,7 +54,11 @@ public class PDFInvoicesController {
 
     }
 
+    /**
+     * This method is used to set the profits and expenses labels.
+     */
     private void setProfitsAndExpenses() {
+
         List<Invoices> invoices = getInvoicesInfos();
         profits = 0;
         expenses = 0;
@@ -65,7 +73,12 @@ public class PDFInvoicesController {
         labelExpenses.setText("Dépenses : "+String.valueOf(expenses)+"€");
     }
 
+    /**
+     * This function is used to initialize the invoices DAO.
+     * @return BaseDao<Invoices, Integer> The invoices DAO.
+     */
     private BaseDao<Invoices, Integer> initInvoicesDao() {
+
         try {
             String url = "jdbc:sqlite:database.db";
             JdbcConnectionSource source = new JdbcConnectionSource(url);
@@ -76,7 +89,12 @@ public class PDFInvoicesController {
         }
     }
 
+    /**
+     * This function is used to get the invoices information from the database.
+     * @return List<Invoices> The list of invoices.
+     */
     private List<Invoices> getInvoicesInfos() {
+
         try {
             BaseDao<Invoices, Integer> tableDao = initInvoicesDao();
             return tableDao.findAll();
@@ -85,7 +103,11 @@ public class PDFInvoicesController {
         }
     }
 
+    /**
+     * This method is used to show the invoices in the VBox.
+     */
     private void showInvoices() {
+
 
         vBoxInvoices.getChildren().clear();
 

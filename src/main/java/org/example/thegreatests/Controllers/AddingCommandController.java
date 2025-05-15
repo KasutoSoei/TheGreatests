@@ -6,6 +6,9 @@ import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -14,13 +17,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.example.thegreatests.Models.BaseDao;
 import org.example.thegreatests.Models.Commands;
 import org.example.thegreatests.Models.Dishes;
 import org.example.thegreatests.Models.Table;
 import org.example.thegreatests.Views.CommandsView;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -50,9 +56,15 @@ public class AddingCommandController {
 
     private String SelectValue;
 
+    @FXML
+    private Pane pane;
 
+    /**
+     * This method is used to initialize the AddingCommandController.
+     */
     @FXML
     public void initialize() {
+
         System.out.println("Controller Adding Command");
         showDishesGrid();
         errorLabel.setVisible(false);
@@ -68,7 +80,12 @@ public class AddingCommandController {
 
     }
 
+    /**
+     * This function is used to initialize the dishes DAO.
+     * @return BaseDao<Dishes, Integer> The dishes DAO.
+     */
     private BaseDao<Dishes, Integer> initDishesDao() {
+
         try {
             String url = "jdbc:sqlite:database.db";
             JdbcConnectionSource source = new JdbcConnectionSource(url);
@@ -80,7 +97,12 @@ public class AddingCommandController {
         }
     }
 
+    /**
+     * This function is used to initialize the tables DAO.
+     * @return BaseDao<Table, Integer> The tables DAO.
+     */
     private BaseDao<Table, Integer> initTablesDao() {
+
         try {
             String url = "jdbc:sqlite:database.db";
             JdbcConnectionSource source = new JdbcConnectionSource(url);
@@ -92,6 +114,10 @@ public class AddingCommandController {
         }
     }
 
+    /**
+     * This function is used to initialize the commands DAO.
+     * @return BaseDao<Commands, Integer> The commands DAO.
+     */
     private BaseDao<Commands, Integer> initCommandsDao() {
         try {
             String url = "jdbc:sqlite:database.db";
@@ -104,6 +130,10 @@ public class AddingCommandController {
         }
     }
 
+    /**
+     * This function is used to get the dishes information from the database.
+     * @return List<Dishes> The list of dishes.
+     */
     private List<Dishes> getDishesInfos() {
         System.out.println("J'ai cliqué sur le bouton");
         try {
@@ -115,6 +145,10 @@ public class AddingCommandController {
         }
     }
 
+    /**
+     * This function is used to get the tables information from the database.
+     * @return List<Table> The list of tables.
+     */
     private List<Table> getTablesInfos() {
         System.out.println("J'ai cliqué sur le bouton");
         try {
@@ -126,6 +160,10 @@ public class AddingCommandController {
         }
     }
 
+    /**
+     * This method is used to add a dish to the command.
+     * @param d The dish to add.
+     */
     private void addingDishesToCommand(Dishes d) {
         System.out.println("Ajout de " + d.getName() + " à la commande");
         HBox dishBox = new HBox();
@@ -140,7 +178,11 @@ public class AddingCommandController {
         vBoxCommand.setPrefHeight(vBoxCommand.getPrefHeight());
     }
 
+    /**
+     * This method is used to show the dishes in the grid.
+     */
     private void showDishesGrid() {
+
         List<Dishes> foundDishes = getDishesInfos();
 
         foundDishes.stream().forEach(d->{
@@ -157,8 +199,12 @@ public class AddingCommandController {
 
     }
 
+    /**
+     * This method is used to validate the command and add it to the database.
+     */
     @FXML
     private void onValidatedCommand() {
+
         BaseDao<Commands, Integer> tableDao = initCommandsDao();
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -198,6 +244,43 @@ public class AddingCommandController {
             errorLabel.setText("Impossible d'ajouter la commande");
             errorLabel.setStyle("-fx-text-fill: red;");
             errorLabel.setVisible(true);
+        }
+    }
+
+    /**
+     * This method is used to initialize the data for the AddingCommandController.
+     * @param currentTableId The ID of the current table.
+     */
+    public void initData(Integer currentTableId) {
+        try {
+            BaseDao<Table, Integer> tablesDao = initTablesDao();
+            List<Table> foundTable = tablesDao.findAll();
+            Optional<Table> selectedTable = foundTable.stream()
+                    .filter(table -> Objects.equals(table.getId(), currentTableId))
+                    .findFirst();
+
+            selectTable.setValue("Table n°" + selectedTable.get().getLocation());
+            selectTable.setDisable(true);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
+    private void onClickBackToTables() {
+        changeScene("/org/example/thegreatests/tables-view.fxml");
+    }
+
+    private void changeScene(String ressourcePath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(ressourcePath));
+            Parent root = loader.load();
+            Stage stage = (Stage) pane.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

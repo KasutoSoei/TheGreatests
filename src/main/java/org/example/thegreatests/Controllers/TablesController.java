@@ -72,6 +72,12 @@ public class TablesController {
     private Integer currentTableId;
 
     @FXML
+    private Pane pane;
+
+    /**
+     * This method is used to initialize the TablesController.
+     */
+    @FXML
     public void initialize() {
         System.out.println("Controller Table");
 
@@ -88,7 +94,12 @@ public class TablesController {
         System.out.println("J'ai cliqué eeeeeeeeeeeeeeeeee");
     }
 
+    /**
+     * This function is used to get the tables information from the database.
+     * @return List<Table> The list of tables.
+     */
     private List<Table> getTableInfos() {
+
         System.out.println("J'ai cliqué sur le bouton");
         try {
             BaseDao<Table, Integer> tableDao = initTableDao();
@@ -101,13 +112,22 @@ public class TablesController {
         }
     }
 
+    /**
+     * This method is used to reload the table information.
+     */
     private void reloadtable() {
+
         gridPane.getChildren().retainAll(gridPane.getChildren().get(0));
         List<Table> foundTable = getTableInfos();
         showTable(foundTable);
     }
 
+    /**
+     * This method is used to display the tables in the grid pane.
+     * @param foundTable The list of tables to display.
+     */
     private void showTable(List<Table> foundTable) {
+
         foundTable.stream()
                 .forEach(
                         t -> {
@@ -129,7 +149,12 @@ public class TablesController {
                 );
     }
 
+    /**
+     * This method is used to open the table panel.
+     * @param t The table to open.
+     */
     private void openTablePanel(Table t) {
+
         labelErrorTable.setText("");
         paneTableName.setText("Table "+t.getLocation());
         paneTable.setVisible(true);
@@ -145,8 +170,12 @@ public class TablesController {
             }
     }
 
+    /**
+     * This method is used to open the create table panel.
+     */
     @FXML
     private void openCreateTablePanel() {
+
         paneTableName.setText("Ajouter une table");
         paneTable2.setVisible(true);
         textFieldTableSizeAdd.setText("");
@@ -154,16 +183,23 @@ public class TablesController {
         labelErrorCreateTable.setText("");
     }
 
+    /**
+     * This method is used to close the table panel.
+     */
     @FXML
     private void closeTablePanel() {
+
         paneTable.setVisible(false);
         paneTable2.setVisible(false);
         paneClientTable.setVisible(false);
     }
 
+    /**
+     * This method is used to delete a table.
+     */
     @FXML
     private void deleteTable() {
-        System.out.println("J'ai cliqué sur le bouton supprimer");
+
         try {
             BaseDao<Table, Integer> tableDao = initTableDao();
             tableDao.deleteById(currentTableId);
@@ -174,9 +210,12 @@ public class TablesController {
         reloadtable();
     }
 
+    /**
+     * This method is used to create a table.
+     */
     @FXML
     private void createTable() {
-        System.out.println("J'ai cliqué sur le bouton ajouter");
+
         try {
 
             BaseDao<Table, Integer> tableDao = initTableDao();
@@ -195,9 +234,12 @@ public class TablesController {
         reloadtable();
     }
 
+    /**
+     * This method is used to save the table information.
+     */
     @FXML
     private void saveTable() {
-        System.out.println("J'ai cliqué sur le bouton sauvegarder");
+
         try {
             BaseDao<Table, Integer> tableDao = initTableDao();
             Table table = tableDao.findById(currentTableId);
@@ -217,7 +259,11 @@ public class TablesController {
         reloadtable();
     }
 
+    /**
+     * This method is used to change the scene.
+     */
     public void handleChangeScene(ActionEvent event) throws IOException {
+
         Parent root = FXMLLoader.load(getClass().getResource("/org/example/thegreatests/Employee-view.fxml"));
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
@@ -225,7 +271,12 @@ public class TablesController {
         stage.show();
     }
 
+    /**
+     * This function is used to initialize the table DAO.
+     * @return BaseDao<Table, Integer> The table DAO.
+     */
     private BaseDao<Table, Integer> initTableDao() {
+
         try {
             String url = "jdbc:sqlite:database.db";
             JdbcConnectionSource source = new JdbcConnectionSource(url);
@@ -237,9 +288,12 @@ public class TablesController {
         }
     }
 
+    /**
+     * This method is used to clear the table.
+     */
     @FXML
     private void clearTable() {
-        System.out.println("J'ai cliqué sur le bouton vider la table");
+
         try {
             BaseDao<Table, Integer> tableDao = initTableDao();
             Table table = tableDao.findById(currentTableId);
@@ -252,15 +306,23 @@ public class TablesController {
         reloadtable();
     }
 
+    /**
+     * This method is used to initialize the CommandsController.
+     */
     @FXML
     private void openClientTable()
     {
+
         labelErrorAddClient.setText("");
         paneClientTable.setVisible(true);
     }
 
+    /**
+     * This method is used to add clients to a table.
+     */
     @FXML
     private void addClientsToTable() {
+
         try {
             BaseDao<Table, Integer> tableDao = initTableDao();
             Table table = tableDao.findById(currentTableId);
@@ -286,8 +348,47 @@ public class TablesController {
         reloadtable();
     }
 
+    /**
+     * This method is used to create a command.
+     */
     @FXML
     private void onCreateCommand() {
 
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/thegreatests/adding-command-view.fxml"));
+            Parent root = loader.load();
+
+            // Récupérer le contrôleur de la nouvelle vue
+            Object controller = loader.getController();
+            if (controller instanceof org.example.thegreatests.Controllers.AddingCommandController) {
+                ((org.example.thegreatests.Controllers.AddingCommandController) controller).initData(currentTableId);
+            }
+
+            Stage stage = (Stage) paneTable.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void onClickBack() {
+        changeScene("/org/example/thegreatests/main-view.fxml");
+
+    }
+
+    private void changeScene(String ressourcePath) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(ressourcePath));
+            Parent root = loader.load();
+            Stage stage = (Stage) pane.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
