@@ -288,6 +288,22 @@ public class TablesController {
 
     @FXML
     private void onCreateCommand() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/thegreatests/adding-command-view.fxml"));
+            Parent root = loader.load();
 
+            // Récupérer le contrôleur de la nouvelle vue
+            Object controller = loader.getController();
+            if (controller instanceof org.example.thegreatests.Controllers.AddingCommandController) {
+                ((org.example.thegreatests.Controllers.AddingCommandController) controller).initData(currentTableId);
+            }
+
+            Stage stage = (Stage) paneTable.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

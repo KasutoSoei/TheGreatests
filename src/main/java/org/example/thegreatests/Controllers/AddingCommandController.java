@@ -200,4 +200,20 @@ public class AddingCommandController {
             errorLabel.setVisible(true);
         }
     }
+
+    public void initData(Integer currentTableId) {
+        // Récupérer la location de la table choisie
+        try {
+            BaseDao<Table, Integer> tablesDao = initTablesDao();
+            List<Table> foundTable = tablesDao.findAll();
+            Optional<Table> selectedTable = foundTable.stream()
+                    .filter(table -> Objects.equals(table.getId(), currentTableId))
+                    .findFirst();
+
+            selectTable.setValue("Table n°" + selectedTable.get().getLocation());
+            selectTable.setDisable(true);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
