@@ -171,7 +171,7 @@ public class AddingCommandController {
 
     /**
      * This method is used to add a dish to the command.
-     * @param d The dish to add.
+     * @param dish The dish to add.
      */
     private void addingDishesToCommand(Dishes dish) {
         // Met à jour la quantité du plat

@@ -2,21 +2,19 @@ package org.example.thegreatests.Controllers;
 
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.example.thegreatests.Models.BaseDao;
-import org.example.thegreatests.Models.CommandDish;
 import org.example.thegreatests.Models.Commands;
 
 import java.io.IOException;
@@ -26,130 +24,130 @@ import java.util.List;
 public class CommandsController {
 
     @FXML
-    private ListView<HBox> CommandList;
+    private TableView<Commands> CommandList;
 
     @FXML
-    private ListView<HBox> CommandFinishList;
+    private TableColumn<Commands, Integer> idColumn;
+
+    @FXML
+    private TableColumn<Commands, String> statusColumn;
+
+    @FXML
+    private TableColumn<Commands, String> dateColumn;
+
+    @FXML
+    private TableColumn<Commands, String> actionColumn;
+
+    @FXML
+    private TableView<Commands> CommandFinishList;
+
+    @FXML
+    private TableColumn<Commands, Integer> finishedIdColumn;
+
+    @FXML
+    private TableColumn<Commands, String> finishedStatusColumn;
+
+    @FXML
+    private TableColumn<Commands, String> finishedDateColumn;
 
     @FXML
     private Pane pane;
 
-    /**
-     * This method is used to initialize the CommandsController.
-     */
+    private final ObservableList<Commands> commandsObservableList = FXCollections.observableArrayList();
+    private final ObservableList<Commands> finishedCommandsObservableList = FXCollections.observableArrayList();
+
     @FXML
     public void initialize() {
+        // Initialize columns for CommandList
+        idColumn.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getId()).asObject());
+        statusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getStatus()));
+        dateColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDate()));
+        actionColumn.setCellFactory(column -> new TableCell<>() {
+            private final Button doneButton = new Button("Terminer");
+            private final Button cancelButton = new Button("Annuler");
+
+            {
+                doneButton.setOnAction(e -> {
+                    Commands command = getTableView().getItems().get(getIndex());
+                    updateCommandStatus(command, "Terminé");
+                });
+                cancelButton.setOnAction(e -> {
+                    Commands command = getTableView().getItems().get(getIndex());
+                    updateCommandStatus(command, "Annulée");
+                });
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    HBox buttons = new HBox(5, doneButton, cancelButton);
+                    setGraphic(buttons);
+                }
+            }
+        });
+
+        // Initialize columns for CommandFinishList
+        finishedIdColumn.setCellValueFactory(data -> new SimpleIntegerProperty(data.getValue().getId()).asObject());
+        finishedStatusColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getStatus()));
+        finishedDateColumn.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getDate()));
+
+        // Load data
         loadCommands();
         loadCommandsFinish();
     }
 
-
-    /**
-     * This function is used to initialize the commands DAO.
-     * @return BaseDao<Commands, Integer> The commands DAO.
-     */
     private BaseDao<Commands, Integer> initCommandDishDao() {
         try {
             String url = "jdbc:sqlite:database.db";
             JdbcConnectionSource source = new JdbcConnectionSource(url);
             TableUtils.createTableIfNotExists(source, Commands.class);
-            BaseDao<Commands, Integer> CommandsDao = new BaseDao<>(source, Commands.class);
-            return CommandsDao;
+            return new BaseDao<>(source, Commands.class);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    /**
-     * This method is used to load the commands from the database and display them in the ListView.
-     */
     private void loadCommands() {
-        CommandList.getItems().clear();
-
+        commandsObservableList.clear();
         try {
-            BaseDao<Commands, Integer> CommandsDao = initCommandDishDao();
-
-            List<Commands> foundCommands = CommandsDao.findAll();
-
-            foundCommands.stream().filter(command -> command.getStatus().equals("En attente")).forEach(command -> {
-                Label label = new Label("Commande n°" + command.getId() + " - " + command.getStatus() + " - " + command.getDate());
-                label.setStyle("-fx-font-size: 15px;");
-
-                Button deleteBtn = new Button("Annuler");
-                if (command.getStatus().equals("Terminé")) {
-                    deleteBtn.setVisible(false);
-                }
-                else {
-                    deleteBtn.setOnAction(e -> {
-                        try {
-                            command.setStatus("Annulée");
-                            CommandsDao.update(command);
-                            CommandList.getItems().clear();
-                            loadCommands();
-                        } catch (SQLException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    });
-                }
-                Button doneBtn = new Button("Terminer");
-                if (command.getStatus().equals("Terminé")) {
-                    doneBtn.setVisible(false);
-                }
-                else {
-                    doneBtn.setOnAction(e -> {
-                        try {
-                            command.setStatus("Terminé");
-                            CommandsDao.update(command);
-                            CommandList.getItems().clear();
-                            CommandFinishList.getItems().clear();
-                            loadCommandsFinish();
-                            loadCommands();
-                        } catch (SQLException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    });
-                }
-
-                VBox labelContainer = new VBox(label);
-                labelContainer.setAlignment(Pos.CENTER_LEFT);
-                VBox deleteBtnContainer = new VBox(deleteBtn);
-                deleteBtnContainer.setAlignment(Pos.CENTER);
-
-                HBox hbox = new HBox(10, labelContainer, doneBtn, deleteBtnContainer);
-                hbox.setPadding(new Insets(5));
-                hbox.setAlignment(Pos.CENTER_LEFT);
-
-                CommandList.getItems().add(hbox);
-            });
-
+            BaseDao<Commands, Integer> commandsDao = initCommandDishDao();
+            List<Commands> foundCommands = commandsDao.findAll();
+            commandsObservableList.addAll(foundCommands.stream()
+                    .filter(command -> command.getStatus().equals("En attente"))
+                    .toList());
+            CommandList.setItems(commandsObservableList);
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void loadCommandsFinish () {
-        BaseDao<Commands, Integer> CommandsDao = initCommandDishDao();
-
-        try{
-        List<Commands> foundCommands = CommandsDao.findAll();
-
-        foundCommands.stream().limit(6).filter(command -> command.getStatus().equals("Terminé")).forEach(command -> {
-            Label label = new Label("Commande n°" + command.getId() + " - " + command.getStatus() + " - " + command.getDate());
-            label.setStyle("-fx-font-size: 15px;");
-
-            VBox labelContainer = new VBox(label);
-            labelContainer.setAlignment(Pos.CENTER_LEFT);
-
-            HBox hbox = new HBox(10, labelContainer);
-            hbox.setPadding(new Insets(5));
-            hbox.setAlignment(Pos.CENTER_LEFT);
-
-            CommandFinishList.getItems().add(hbox);
-        });
-
-    } catch (SQLException e) {
-        e.printStackTrace();
+    private void loadCommandsFinish() {
+        finishedCommandsObservableList.clear();
+        try {
+            BaseDao<Commands, Integer> commandsDao = initCommandDishDao();
+            List<Commands> foundCommands = commandsDao.findAll();
+            finishedCommandsObservableList.addAll(foundCommands.stream()
+                    .filter(command -> command.getStatus().equals("Terminé"))
+                    .toList());
+            CommandFinishList.setItems(finishedCommandsObservableList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
+
+    private void updateCommandStatus(Commands command, String newStatus) {
+        try {
+            BaseDao<Commands, Integer> commandsDao = initCommandDishDao();
+            command.setStatus(newStatus);
+            commandsDao.update(command);
+            loadCommands();
+            loadCommandsFinish();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -157,9 +155,9 @@ public class CommandsController {
         changeScene("/org/example/thegreatests/main-view.fxml");
     }
 
-    private void changeScene(String ressourcePath) {
+    private void changeScene(String resourcePath) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(ressourcePath));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(resourcePath));
             Parent root = loader.load();
             Stage stage = (Stage) pane.getScene().getWindow();
             Scene scene = new Scene(root);
