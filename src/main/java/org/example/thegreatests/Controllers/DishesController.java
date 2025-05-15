@@ -2,11 +2,9 @@ package org.example.thegreatests.Controllers;
 
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.table.TableUtils;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -15,9 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.example.thegreatests.Models.BaseDao;
 import org.example.thegreatests.Models.Dishes;
@@ -25,9 +21,11 @@ import javafx.scene.control.Label;
 import javafx.geometry.Insets;
 import javafx.scene.image.Image;
 
+import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 
 public class DishesController {
@@ -39,68 +37,142 @@ public class DishesController {
     @FXML
     private AnchorPane pane;
 
+    @FXML
+    private Label expensiveDish;
+
+    @FXML
+    private Label affordableDish;
+
+    @FXML
+    private Label totalPrice;
+
+    @FXML
+    private TextField searchBar;
+
+    @FXML
+    private Button SearchBtn;
+
     /**
      * This method is used to initialize the DishesController.
      */
     public void initialize() {
-        loadDishes();
+        displayDishes(null);
+
+        SearchBtn.setOnAction(e -> {
+            String keyword = searchBar.getText().trim();
+            displayDishes(keyword);
+        });
     }
 
     /**
-     * This method is used to load the dishes from the database and display them in the ListView.
+     * This method is used to initialize the order with minimum and maximum prices and sum of all dishes.
      */
-    private void loadDishes() {
+    private void priceIndicators() {
+        List<Dishes> Dishes = getDishesInfos();
+        Optional<Dishes> mostExpensive = Dishes.stream()
+                .max((d1, d2) -> Float.compare(d1.getPrice(), d2.getPrice()));
+
+        Optional<Dishes> leastExpensive = Dishes.stream()
+                .min((d1, d2) -> Float.compare(d1.getPrice(), d2.getPrice()));
+
+        float total = (float) Dishes.stream()
+                .mapToDouble(dish -> dish.getPrice())
+                .sum();
+
+        if (mostExpensive.isPresent()) {
+            Dishes dish = mostExpensive.get();
+            expensiveDish.setText("Plat le moins cher : " + dish.getName() + " " + dish.getPrice() + " €");
+        } else {
+            expensiveDish.setText("Aucun plat trouvé");
+        }
+
+        if (leastExpensive.isPresent()) {
+            Dishes dish = leastExpensive.get();
+            affordableDish.setText("Plat le plus cher : "+ dish.getName() + " " + dish.getPrice() + " €");
+        } else {
+            affordableDish.setText("Aucun plat trouvé");
+        }
+
+        totalPrice.setText(String.valueOf(total + " €"));
+    }
+
+    /**
+     * This function is used to initialize the tables DAO.
+     * @return BaseDao<Table, Integer> The tables DAO.
+     */
+    private BaseDao<Dishes, Integer> initDishesDao() {
+
         try {
             String url = "jdbc:sqlite:database.db";
             JdbcConnectionSource source = new JdbcConnectionSource(url);
-
             TableUtils.createTableIfNotExists(source, Dishes.class);
-            BaseDao<Dishes, Integer> DishDao = new BaseDao<>(source, Dishes.class);
-
-            List<Dishes> foundDishes = DishDao.findAll();
-
-            foundDishes.stream().forEach(dish -> {
-                ImageView img = new ImageView(new Image(dish.getImage(), true));
-                img.setFitWidth(80);
-                img.setFitHeight(60);
-
-
-                Button deleteBtn = new Button("Supprimer");
-                deleteBtn.setOnAction(e -> {
-                    try {
-                        DishDao.deleteById(dish.getId());
-                        MyListView.getItems().clear();
-                        loadDishes();
-                    } catch (SQLException ex) {
-                        throw new RuntimeException(ex);
-                    }
-                });
-
-                Label label = new Label(dish.getName());
-                label.setStyle("-fx-font-size: 25px;");
-
-                String desc = dish.getDescription();
-                Float price = dish.getPrice();
-
-                VBox labelContainer = new VBox(label);
-                labelContainer.setAlignment(Pos.CENTER);
-                VBox deleteBtnContainer = new VBox(deleteBtn);
-                deleteBtnContainer.setAlignment(Pos.CENTER);
-                HBox hbox = new HBox(10, img, labelContainer, deleteBtnContainer);
-                hbox.setPadding(new Insets(5));
-
-                hbox.setOnMouseClicked(event -> {
-                    handleDishClicked(desc, price);
-                });
-
-                MyListView.getItems().add(hbox);
-
-            });
-
+            BaseDao<Dishes, Integer> DishesDao = new BaseDao<>(source, Dishes.class);
+            return DishesDao;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
+
+    /**
+     * This function is used to get the tables information from the database.
+     * @return List<Table> The list of tables.
+     */
+    private List<Dishes> getDishesInfos() {
+        System.out.println("J'ai cliqué sur le bouton");
+        try {
+            BaseDao<Dishes, Integer> DishesDao = initDishesDao();
+            List<Dishes> FoudDishes = DishesDao.findAll();
+            return FoudDishes;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * This method is used to initialize the Dishes in listview and search bar.
+     */
+    private void displayDishes(String keyword) {
+        MyListView.getItems().clear();
+        BaseDao<Dishes, Integer> dishesDao = initDishesDao();
+        List<Dishes> allDishes = getDishesInfos();
+
+        allDishes.stream()
+                .filter(dish -> keyword == null || keyword.isEmpty() || dish.getDescription().toLowerCase().contains(keyword.toLowerCase()))
+                .forEach(dish -> {
+                    ImageView img = new ImageView(new Image(dish.getImage(), true));
+                    img.setFitWidth(80);
+                    img.setFitHeight(60);
+
+                    Button deleteBtn = new Button("Supprimer");
+                    deleteBtn.setOnAction(e -> {
+                        try {
+                            dishesDao.deleteById(dish.getId());
+                            displayDishes(keyword); // recharge après suppression
+                            priceIndicators();
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    });
+
+                    Label label = new Label(dish.getName());
+                    label.setStyle("-fx-font-size: 25px;");
+
+                    VBox labelContainer = new VBox(label);
+                    labelContainer.setAlignment(Pos.CENTER);
+                    VBox deleteBtnContainer = new VBox(deleteBtn);
+                    deleteBtnContainer.setAlignment(Pos.CENTER);
+
+                    HBox hbox = new HBox(10, img, labelContainer, deleteBtnContainer);
+                    hbox.setPadding(new Insets(5));
+
+                    hbox.setOnMouseClicked(event -> handleDishClicked(dish.getDescription(), dish.getPrice()));
+
+                    MyListView.getItems().add(hbox);
+                });
+
+        priceIndicators(); // à appeler une seule fois ici
+    }
+
 
 
     /**
@@ -165,8 +237,8 @@ public class DishesController {
                     DishDao.create(dish);
 
                     popup.close();
-                    MyListView.getItems().clear();
-                    loadDishes();
+                    displayDishes(null);
+
 
             } catch (NumberFormatException ex) {
                 if (!panel.getChildren().contains(errorLabel)) {
