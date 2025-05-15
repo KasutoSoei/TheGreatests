@@ -27,25 +27,27 @@
          </children>
       </HBox>
       <Button layoutX="1130.0" layoutY="42.0" mnemonicParsing="false" onAction="#openInvoiceCreationModal" text="Créer une facture" />
-      <Pane fx:id="paneFactureCreation" layoutX="256.0" layoutY="32.0" prefHeight="615.0" prefWidth="717.0" style="-fx-background-color: lightblue;" visible="false">
+      <Pane fx:id="paneFactureCreation" layoutX="256.0" layoutY="32.0" prefHeight="615.0" prefWidth="717.0" style="-fx-background-color: lightblue;">
          <children>
             <Label alignment="CENTER" layoutX="24.0" layoutY="22.0" prefHeight="93.0" prefWidth="637.0" text="Créer une facture" textAlignment="CENTER">
                <font>
                   <Font size="64.0" />
                </font></Label>
             <Button layoutX="679.0" layoutY="14.0" mnemonicParsing="false" onAction="#closeInvoiceCreationModal" text="X" />
-            <Label layoutX="82.0" layoutY="157.0" text="Description de la facture" />
+            <Label layoutX="84.0" layoutY="232.0" text="Description de la facture" />
             <Label layoutX="81.0" layoutY="403.0" text="Date" />
             <DatePicker fx:id="datePicker" layoutX="80.0" layoutY="434.0" />
             <Label layoutX="84.0" layoutY="475.0" text="Prix" />
             <TextField fx:id="textFieldPrice" layoutX="82.0" layoutY="503.0" onKeyTyped="#updateText" />
             <Button layoutX="80.0" layoutY="563.0" mnemonicParsing="false" onAction="#onCreateInvoice" text="Créer une facture" />
-            <TextArea fx:id="textInvoiceDescription" layoutX="80.0" layoutY="174.0" prefHeight="200.0" prefWidth="608.0" promptText="Commande 14 avec :Patate" />
+            <TextArea fx:id="textInvoiceDescription" layoutX="80.0" layoutY="258.0" prefHeight="116.0" prefWidth="608.0" promptText="Commande 14 avec :Patate" />
             <Label fx:id="labelErrorInvoiceCreation" layoutX="308.0" layoutY="411.0" text="Erreur Label" textFill="RED">
                <font>
                   <Font size="24.0" />
                </font>
             </Label>
+            <ComboBox fx:id="selectInvoices" layoutX="81.0" layoutY="189.0" prefHeight="25.0" prefWidth="462.0" promptText="Pas de commande associée" />
+            <Label layoutX="80.0" layoutY="165.0" text="Commande associée à la facture" />
          </children></Pane>
       <Button layoutX="1017.0" layoutY="42.0" mnemonicParsing="false" onAction="#onExportPDF" text="Exporter en PDF" />
       <Button layoutX="52.0" layoutY="1.0" mnemonicParsing="false" onAction="#onClickBack" text="Retour" />

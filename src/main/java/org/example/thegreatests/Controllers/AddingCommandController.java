@@ -139,6 +139,18 @@ public class AddingCommandController {
         }
     }
 
+    private BaseDao<Invoices, Integer> initInvoicesDao() {
+        try {
+            String url = "jdbc:sqlite:database.db";
+            JdbcConnectionSource source = new JdbcConnectionSource(url);
+            TableUtils.createTableIfNotExists(source, Invoices.class);
+            BaseDao<Invoices, Integer> invoicesDao = new BaseDao<>(source, Invoices.class);
+            return invoicesDao;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * This function is used to get the dishes information from the database.
      * @return List<Dishes> The list of dishes.
@@ -171,7 +183,7 @@ public class AddingCommandController {
 
     /**
      * This method is used to add a dish to the command.
-     * @param d The dish to add.
+     * @param dish The dish to add.
      */
     private void addingDishesToCommand(Dishes dish) {
         // Met à jour la quantité du plat
@@ -249,6 +261,8 @@ public class AddingCommandController {
     private void onValidatedCommand() {
         BaseDao<Commands, Integer> commandDao = initCommandsDao();
         BaseDao<CommandDish, Integer> commandDishDao = initCommandDishDao();
+        BaseDao<Invoices, Integer> invoicesDao = initInvoicesDao();
+
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -270,6 +284,8 @@ public class AddingCommandController {
 
         Commands command = new Commands(idTable,"En attente", formatter.format(now));
         GlobalChrono chrono = GlobalChrono.getInstance();
+
+
         try {
             if (chrono.isUnder15Minutes()){throw new SQLException();}
             if (vBoxCommand.getChildren().isEmpty()){
@@ -290,9 +306,11 @@ public class AddingCommandController {
             errorLabel.setVisible(true);
         }
 
+        float totalPrice = 0;
         for (Map.Entry<Dishes, Integer> entry : dishesCountMap.entrySet()) {
             Dishes dish = entry.getKey();
             int quantity = entry.getValue();
+            totalPrice += dish.getPrice() * quantity;
 
             CommandDish commandDish = new CommandDish(command, dish, quantity);
             System.out.println("la commande : " + command.getId() + " dish : " + dish + "quantity : " + quantity);
@@ -302,6 +320,13 @@ public class AddingCommandController {
                 throw new RuntimeException(e);
             }
         }
+        try {
+            Invoices invoice = new Invoices("Facture de la commande n°" + command.getId(), "En attente", totalPrice, new java.util.Date());
+            invoicesDao.create(invoice);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
         dishesCountMap.clear();
     }
 
