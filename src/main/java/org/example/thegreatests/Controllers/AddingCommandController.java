@@ -20,10 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.example.thegreatests.Models.BaseDao;
-import org.example.thegreatests.Models.Commands;
-import org.example.thegreatests.Models.Dishes;
-import org.example.thegreatests.Models.Table;
+import org.example.thegreatests.Models.*;
 import org.example.thegreatests.Views.CommandsView;
 
 import java.io.IOException;
@@ -226,8 +223,9 @@ public class AddingCommandController {
         int idTable = selectedTable.get().getId();
 
         Commands command = new Commands(dishiesList, idTable,"En attente", formatter.format(now));
-
+        GlobalChrono chrono = GlobalChrono.getInstance();
         try {
+            if (chrono.isUnder15Minutes()){throw new SQLException();}
             if (vBoxCommand.getChildren().isEmpty()){
                 errorLabel.setText("La commande doit contenir au moins un plat");
                 errorLabel.setStyle("-fx-text-fill: red;");
