@@ -27,6 +27,9 @@
       </ScrollPane>
       <Label fx:id="errorLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="865.0" layoutY="638.0" prefHeight="17.0" prefWidth="407.0" text="Label" />
       <Button layoutX="863.0" layoutY="664.0" mnemonicParsing="false" onAction="#onValidatedCommand" prefHeight="25.0" prefWidth="407.0" text="Valider la commande" />
-      <Button layoutX="16.0" layoutY="326.0" mnemonicParsing="false" onAction="#onClickBackToTables" text="Retour aux tables" />
+        <Button layoutX="16.0" layoutY="326.0" mnemonicParsing="false" onAction="#onClickBackToTables" text="Retour aux tables" />
+        <Pane layoutX="700.0" layoutY="660.0">
+            <fx:include fx:id="appBar" source="appBar-view.fxml" />
+        </Pane>
     </children>
 </Pane>

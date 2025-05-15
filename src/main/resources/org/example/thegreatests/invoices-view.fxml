@@ -49,5 +49,8 @@
          </children></Pane>
       <Button layoutX="1017.0" layoutY="42.0" mnemonicParsing="false" onAction="#onExportPDF" text="Exporter en PDF" />
       <Button layoutX="52.0" layoutY="1.0" mnemonicParsing="false" onAction="#onClickBack" text="Retour" />
+      <Pane layoutX="860.0" layoutY="42.0">
+         <fx:include fx:id="appBar" source="appBar-view.fxml" />
+      </Pane>
    </children>
 </Pane>

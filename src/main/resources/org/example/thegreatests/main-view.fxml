@@ -11,5 +11,8 @@
       <Button layoutX="86.0" layoutY="184.0" mnemonicParsing="false" onAction="#onClickViewEmployees" text="Voir les employés" />
       <Button layoutX="86.0" layoutY="231.0" mnemonicParsing="false" onAction="#onClickViewDishes" text="Voir les plats" />
       <Button layoutX="86.0" layoutY="275.0" mnemonicParsing="false" onAction="#onClickViewInvoices" text="Voir les factures" />
+      <Pane layoutX="1130.0" layoutY="660.0">
+         <fx:include fx:id="appBar" source="appBar-view.fxml" />
+      </Pane>
    </children>
 </Pane>

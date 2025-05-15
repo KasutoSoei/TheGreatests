@@ -12,8 +12,6 @@ public class Commands {
     @DatabaseField(generatedId = true)
     private int id;
 
-    private List<Dishes> dishiesList;
-
     @DatabaseField
     private Integer idTable;
 
@@ -25,8 +23,7 @@ public class Commands {
 
     public Commands() {}
 
-    public Commands(List<Dishes> dishiesList, Integer idTable, String status, String date) {
-        this.dishiesList = dishiesList;
+    public Commands(Integer idTable, String status, String date) {
         this.idTable = idTable;
         this.status = status;
         this.date = date;
@@ -34,14 +31,6 @@ public class Commands {
 
     public int getId() {
         return id;
-    }
-
-    public List<Dishes> getDishiesList() {
-        return dishiesList;
-    }
-
-    public void setDishiesList(List<Dishes> dishiesList) {
-        this.dishiesList = dishiesList;
     }
 
     public Integer getIdTable() {
