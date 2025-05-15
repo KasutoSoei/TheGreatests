@@ -16,6 +16,9 @@ public class AppBarController {
 
     private boolean alreadyStarted = false;
 
+    /**
+     * This method is used to initialize the AppBarController.
+     */
     @FXML
     public void initialize() {
         GlobalChrono chrono = GlobalChrono.getInstance();
@@ -28,11 +31,14 @@ public class AppBarController {
             }
         }));
 
-        // 🧠 Synchronise le bouton avec l'état réel du chrono
+        // Synchronise le bouton avec l'état réel du chrono
         timerLabel.setText(chrono.getFormattedTime());
         startButton.setDisable(chrono.isRunning());
     }
 
+    /**
+     * This method is used to handle the start button click event.
+     */
     @FXML
     private void handleStart() {
         if (!alreadyStarted) {

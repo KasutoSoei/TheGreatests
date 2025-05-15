@@ -31,12 +31,16 @@ public class DishesController {
     private ListView<HBox> MyListView;
     private TextField indexError;
 
-    // Calls LoadDishes at page start
+    /**
+     * This method is used to initialize the DishesController.
+     */
     public void initialize() {
         loadDishes();
     }
 
-    // Method getting dishes in database and displaying them
+    /**
+     * This method is used to load the dishes from the database and display them in the ListView.
+     */
     private void loadDishes() {
         try {
             String url = "jdbc:sqlite:database.db";
@@ -91,10 +95,11 @@ public class DishesController {
     }
 
 
-    // Method opening a popup to create a new dish
+    /**
+     * This method is used to handle the create dish button click event.
+     */
     @FXML
     private void handleCreateDish (){
-
         VBox panel = new VBox(10);
         panel.setStyle("-fx-background-color: lightblue;");
         panel.setPadding(new Insets(10));
@@ -178,8 +183,11 @@ public class DishesController {
         popup.show();
     }
 
+    /**
+     * This method is used to handle the dish clicked event.
+     */
     private void handleDishClicked(String desc, float price){
-        // show popup with dish details
+
         HBox selectedDish = MyListView.getSelectionModel().getSelectedItem();
 
         VBox detailsPanel = new VBox(10);

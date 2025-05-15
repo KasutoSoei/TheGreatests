@@ -50,9 +50,12 @@ public class AddingCommandController {
 
     private String SelectValue;
 
-
+    /**
+     * This method is used to initialize the AddingCommandController.
+     */
     @FXML
     public void initialize() {
+
         System.out.println("Controller Adding Command");
         showDishesGrid();
         errorLabel.setVisible(false);
@@ -68,7 +71,12 @@ public class AddingCommandController {
 
     }
 
+    /**
+     * This function is used to initialize the dishes DAO.
+     * @return BaseDao<Dishes, Integer> The dishes DAO.
+     */
     private BaseDao<Dishes, Integer> initDishesDao() {
+
         try {
             String url = "jdbc:sqlite:database.db";
             JdbcConnectionSource source = new JdbcConnectionSource(url);
@@ -80,7 +88,12 @@ public class AddingCommandController {
         }
     }
 
+    /**
+     * This function is used to initialize the tables DAO.
+     * @return BaseDao<Table, Integer> The tables DAO.
+     */
     private BaseDao<Table, Integer> initTablesDao() {
+
         try {
             String url = "jdbc:sqlite:database.db";
             JdbcConnectionSource source = new JdbcConnectionSource(url);
@@ -92,6 +105,10 @@ public class AddingCommandController {
         }
     }
 
+    /**
+     * This function is used to initialize the commands DAO.
+     * @return BaseDao<Commands, Integer> The commands DAO.
+     */
     private BaseDao<Commands, Integer> initCommandsDao() {
         try {
             String url = "jdbc:sqlite:database.db";
@@ -104,6 +121,10 @@ public class AddingCommandController {
         }
     }
 
+    /**
+     * This function is used to get the dishes information from the database.
+     * @return List<Dishes> The list of dishes.
+     */
     private List<Dishes> getDishesInfos() {
         System.out.println("J'ai cliqué sur le bouton");
         try {
@@ -115,6 +136,10 @@ public class AddingCommandController {
         }
     }
 
+    /**
+     * This function is used to get the tables information from the database.
+     * @return List<Table> The list of tables.
+     */
     private List<Table> getTablesInfos() {
         System.out.println("J'ai cliqué sur le bouton");
         try {
@@ -126,6 +151,10 @@ public class AddingCommandController {
         }
     }
 
+    /**
+     * This method is used to add a dish to the command.
+     * @param d The dish to add.
+     */
     private void addingDishesToCommand(Dishes d) {
         System.out.println("Ajout de " + d.getName() + " à la commande");
         HBox dishBox = new HBox();
@@ -140,7 +169,11 @@ public class AddingCommandController {
         vBoxCommand.setPrefHeight(vBoxCommand.getPrefHeight());
     }
 
+    /**
+     * This method is used to show the dishes in the grid.
+     */
     private void showDishesGrid() {
+
         List<Dishes> foundDishes = getDishesInfos();
 
         foundDishes.stream().forEach(d->{
@@ -157,8 +190,12 @@ public class AddingCommandController {
 
     }
 
+    /**
+     * This method is used to validate the command and add it to the database.
+     */
     @FXML
     private void onValidatedCommand() {
+
         BaseDao<Commands, Integer> tableDao = initCommandsDao();
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -201,8 +238,11 @@ public class AddingCommandController {
         }
     }
 
+    /**
+     * This method is used to initialize the data for the AddingCommandController.
+     * @param currentTableId The ID of the current table.
+     */
     public void initData(Integer currentTableId) {
-        // Récupérer la location de la table choisie
         try {
             BaseDao<Table, Integer> tablesDao = initTablesDao();
             List<Table> foundTable = tablesDao.findAll();

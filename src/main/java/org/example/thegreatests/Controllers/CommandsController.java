@@ -21,11 +21,17 @@ public class CommandsController {
     @FXML
     private ListView<HBox> MyListView;
 
+    /**
+     * This method is used to initialize the CommandsController.
+     */
     @FXML
     public void initialize() {
         loadCommands();
     }
 
+    /**
+     * This method is used to load the commands from the database and display them in the ListView.
+     */
     private void loadCommands() {
         MyListView.getItems().clear();
         try {

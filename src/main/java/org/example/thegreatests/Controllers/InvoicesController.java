@@ -54,6 +54,11 @@ public class InvoicesController {
     private TextArea textInvoiceDescription;
 
     private BaseDao<Invoices, Integer> initInvoicesDao() {
+        /**
+         * This function is used to initialize the InvoicesDao.
+         * @param null
+         * @return BaseDao<Invoices, Integer>
+         */
         try {
             String url = "jdbc:sqlite:database.db";
             JdbcConnectionSource source = new JdbcConnectionSource(url);
@@ -64,22 +69,21 @@ public class InvoicesController {
         }
     }
 
+    /**
+     * This method is used to initialize the InvoicesController.
+     */
     @FXML
     public void initialize() {
-        System.out.println("Controller Invoice");
-        //BaseDao<Invoices, Integer> invoiceDao = initInvoicesDao();
-        //try {
-        //    Invoices invoice = new Invoices("Test", "En attente", 100, new java.util.Date());
-        //    invoiceDao.create(invoice);
-        //} catch (SQLException e) {
-        //    throw new RuntimeException(e);
-        //}
         setProfitsAndExpenses();
         showInvoices();
     }
 
+    /**
+     * This method is used to update the text in the text field.
+     */
     @FXML
     public void updateText() {
+
         int caretPos = textFieldPrice.getCaretPosition(); // Garder la position du input pour éviter qu'il se retrouve au début
         String input = textFieldPrice.getText().replaceAll("[^\\d.,-]", "");
         if (input.isEmpty()) {
@@ -97,7 +101,11 @@ public class InvoicesController {
         }
     }
 
+    /**
+     * This method is used to set the profits and expenses labels.
+     */
     private void setProfitsAndExpenses() {
+
         List<Invoices> invoices = getInvoicesInfos();
         profits = 0;
         expenses = 0;
@@ -112,7 +120,11 @@ public class InvoicesController {
         labelTotalExpenses.setText("Dépenses : "+String.valueOf(expenses)+"€");
     }
 
+    /**
+     * This method is used to get the invoices from the database.
+     */
     private List<Invoices> getInvoicesInfos() {
+
         try {
             BaseDao<Invoices, Integer> tableDao = initInvoicesDao();
             return tableDao.findAll();
@@ -121,7 +133,11 @@ public class InvoicesController {
         }
     }
 
+    /**
+     * This method is used to show the invoices in the VBox.
+     */
     private void showInvoices() {
+
 
         vBoxInvoices.getChildren().clear();
 
@@ -148,20 +164,32 @@ public class InvoicesController {
     }
 
 
+    /**
+     * This method is used to close the invoice creation modal.
+     */
     @FXML
     private void closeInvoiceCreationModal() {
+
         paneFactureCreation.setVisible(false);
 
     }
 
+    /**
+     * This method is used to open the invoice creation modal.
+     */
     @FXML void openInvoiceCreationModal() {
+
         paneFactureCreation.setVisible(true);
 
         datePicker.setValue(java.time.LocalDate.now());
         labelErrorInvoiceCreation.setText("");
     }
 
+    /**
+     * This method is used to create an invoice.
+     */
     @FXML void onCreateInvoice() {
+
 
         if (textFieldPrice.getText().isEmpty()) {
             labelErrorInvoiceCreation.setText("Erreur : le prix est vide");
@@ -200,8 +228,12 @@ public class InvoicesController {
         }
     }
 
+    /**
+     * This method is used to export the invoices to a PDF file.
+     */
     @FXML
     private void onExportPDF() throws IOException {
+
         FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/thegreatests/pdf-invoices.fxml"));
         fxmlLoader.load();
     }
